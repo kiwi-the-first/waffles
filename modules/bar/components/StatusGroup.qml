@@ -5,6 +5,7 @@ import Quickshell.Services.Pipewire
 import Quickshell.Services.UPower
 import Quickshell.Io
 import "../../../widgets" as Widgets
+import "../../../utils"
 
 Rectangle {
     id: root
@@ -64,7 +65,7 @@ Rectangle {
             property var networkProcess: null
 
             function checkNetworkStatus() {
-                console.log("StatusGroup: Checking network status");
+                DebugUtils.log("StatusGroup: Checking network status");
 
                 if (networkProcess) {
                     networkProcess.destroy();
@@ -86,7 +87,7 @@ Rectangle {
                         stderr: StdioCollector {
                             onStreamFinished: {
                                 if (text.length > 0) {
-                                    console.log("StatusGroup: Network error:", text);
+                                    DebugUtils.error("StatusGroup: Network error:", text);
                                 }
                             }
                         }
@@ -114,7 +115,7 @@ Rectangle {
                 ssid = activeSSID;
                 signalStrength = signal;
 
-                console.log("StatusGroup:", connectionStatus === "connected" ? `Connected to ${ssid} (${signalStrength}%)` : "Disconnected");
+                DebugUtils.log("StatusGroup:", connectionStatus === "connected" ? `Connected to ${ssid} (${signalStrength}%)` : "Disconnected");
             }
 
             Behavior on color {

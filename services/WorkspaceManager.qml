@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Io
 import "../modules/common"
+import "../utils"
 
 QtObject {
     id: root
@@ -20,7 +21,7 @@ QtObject {
         repeat: false
 
         onTriggered: {
-            console.log("Updating workspace data...");
+            DebugUtils.log("Updating workspace data...");
             root.fetchClientsData();
         }
     }
@@ -61,7 +62,7 @@ QtObject {
 
             // Only update on window changes, not workspace switches
             if (event.name === "openwindow" || event.name === "closewindow" || event.name === "movewindow") {
-                console.log("Window event detected:", event.name, "- updating workspace data");
+                DebugUtils.log("Window event detected:", event.name, "- updating workspace data");
                 root.updateWorkspaceData();
             }
         }
@@ -132,7 +133,7 @@ QtObject {
 
             workspaceData = workspaces;
         } catch (e) {
-            console.error("Failed to parse hyprctl clients output:", e);
+            DebugUtils.error("Failed to parse hyprctl clients output:", e);
             // Keep the basic workspace structure even if client parsing fails
         }
     }
@@ -150,7 +151,7 @@ QtObject {
     }
 
     function showWorkspaceWindow() {
-        console.log("Showing workspace window - refreshing data");
+        DebugUtils.log("Showing workspace window - refreshing data");
         updateWorkspaceData();
         workspaceWindowVisible = true;
     }

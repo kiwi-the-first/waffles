@@ -5,12 +5,14 @@ import QtQuick.Effects
 import Quickshell
 import "../../../../services"
 import "../../../settings" as Settings
+import "../../../../utils"
+import "../../../../widgets" as Widgets
 
 PopupWindow {
     id: actionCenterWindow
 
     implicitWidth: 300
-    implicitHeight: 400
+    implicitHeight: 420
     visible: false
     color: "transparent"
 
@@ -130,8 +132,56 @@ PopupWindow {
                     }
                 }
 
-                // Settings Section
-                Settings.InteractionModePanel {}
+                // Settings Button
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: Qt.alpha("#938f99", 0.05)
+                    radius: 12
+                    border.width: 1
+                    border.color: Qt.alpha("#938f99", 0.1)
+
+                    Row {
+                        anchors.centerIn: parent
+                        spacing: 12
+
+                        Widgets.MaterialIcon {
+                            text: "settings"
+                            font.pointSize: 18
+                            color: "#e6e0e9"
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        Text {
+                            text: "Settings"
+                            font.family: "JetBrains Mono"
+                            font.pointSize: 12
+                            font.weight: Font.Medium
+                            color: "#e6e0e9"
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+
+                    MouseArea {
+                        id: settingsMouseArea
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        hoverEnabled: true
+                        onClicked: {
+                            SettingsManager.showSettingsWindow();
+                        }
+                        onContainsMouseChanged: {
+                            parent.color = settingsMouseArea.containsMouse ? Qt.alpha("#938f99", 0.15) : Qt.alpha("#938f99", 0.05);
+                        }
+                    }
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 200
+                            easing.type: Easing.OutQuad
+                        }
+                    }
+                }
 
                 // Notifications Section
                 Rectangle {
@@ -200,7 +250,7 @@ PopupWindow {
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
                                 onClicked: {
-                                    console.log("Settings clicked");
+                                    DebugUtils.log("Settings clicked");
                                 }
                             }
                         }
@@ -227,7 +277,7 @@ PopupWindow {
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
                                 onClicked: {
-                                    console.log("Power clicked");
+                                    DebugUtils.log("Power clicked");
                                 }
                             }
                         }

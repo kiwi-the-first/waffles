@@ -30,6 +30,15 @@ ShellRoot {
         visible: ActionCenterManager.actionCenterVisible
     }
 
+    Widgets.SettingsWindow {
+        id: settingsWindow
+        objectName: "settingsWindow"
+        anchor.window: mainBar
+        anchor.rect.x: 70
+        anchor.rect.y: 440
+        visible: SettingsManager.settingsWindowVisible
+    }
+
     Widgets.WorkspaceWindow {
         id: workspaceWindow
         objectName: "workspaceWindow"

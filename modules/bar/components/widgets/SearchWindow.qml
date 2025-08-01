@@ -6,6 +6,7 @@ import QtQuick.Controls
 import QtQuick.Effects
 import Quickshell
 import "../../../../services"
+import "../../../../utils"
 
 Rectangle {
     id: searchWindow
@@ -320,7 +321,7 @@ Rectangle {
     }
 
     function executeSearchResult(result) {
-        console.log("Executing:", result.name, "->", result.exec);
+        DebugUtils.log("Executing:", result.name, "->", result.exec);
 
         if (result.type === "Command") {
             Quickshell.execDetached(["bash", "-c", result.exec]);

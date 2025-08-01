@@ -10,6 +10,7 @@ QtObject {
     readonly property Padding padding: Padding {}
     readonly property FontStuff font: FontStuff {}
     readonly property Anim anim: Anim {}
+    readonly property Debug debug: Debug {}
 
     // Rounding constants
     component Rounding: QtObject {
@@ -85,5 +86,10 @@ QtObject {
     component Anim: QtObject {
         readonly property AnimCurves curves: AnimCurves {}
         readonly property AnimDurations durations: AnimDurations {}
+    }
+
+    // Debug configuration
+    component Debug: QtObject {
+        property bool enabled: false
     }
 }

@@ -1,5 +1,6 @@
 singleton CalendarManager 1.0 CalendarManager.qml
 singleton ActionCenterManager 1.0 ActionCenterManager.qml
+singleton SettingsManager 1.0 SettingsManager.qml
 singleton WorkspaceManager 1.0 WorkspaceManager.qml
 singleton SearchManager 1.0 SearchManager.qml
 WorkspaceDataProvider 1.0 WorkspaceDataProvider.qml

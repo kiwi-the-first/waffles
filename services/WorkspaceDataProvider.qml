@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "../utils"
 
 Item {
     id: root
@@ -52,16 +53,17 @@ Item {
                 }
             }
 
-            console.log("Generated workspace data with", Object.keys(workspaces).length, "workspaces");
+            DebugUtils.log("Generated workspace data with", Object.keys(workspaces).length, "workspaces");
             workspaceData = workspaces;
             dataUpdated(workspaceData);
         } catch (e) {
-            console.error("Failed to parse hyprctl clients output:", e);
+            DebugUtils.error("Failed to parse hyprctl clients output:", e);
             generateFallbackData();
         }
     }
 
     function generateFallbackData() {
+        DebugUtils.warn("Using fallback workspace data - could not retrieve real workspace information");
         // Generate fallback workspace data 1-10
         let fallbackData = {};
         for (let i = 1; i <= 10; i++) {

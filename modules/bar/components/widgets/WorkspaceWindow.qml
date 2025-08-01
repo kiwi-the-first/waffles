@@ -30,7 +30,7 @@ PopupWindow {
 
             onHoveredChanged: {
                 // Disable auto-hide on hover for testing scrolling
-                console.log("Workspace window hovered:", hovered);
+                DebugUtils.log("Workspace window hovered:", hovered);
                 if (hovered) {
                     WorkspaceManager.workspaceWindowHovered = true;
                     WorkspaceManager.stopHideTimer();
@@ -263,7 +263,7 @@ PopupWindow {
                                 const workspaceId = workspaceRect.workspaceData.id;
                                 const workspaceName = workspaceRect.workspaceData.name || `Workspace ${workspaceId}`;
 
-                                console.log("Switching to workspace:", workspaceId, "name:", workspaceName);
+                                DebugUtils.log("Switching to workspace:", workspaceId, "name:", workspaceName);
 
                                 // Check if this is a special workspace
                                 if (workspaceName.startsWith("special:")) {
