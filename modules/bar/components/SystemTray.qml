@@ -352,11 +352,16 @@ Column {
                         }
 
                         function showContextMenu() {
-                            if (parent.modelData.hasMenu) {
+                            if (parent.modelData && parent.modelData.hasMenu) {
                                 DebugUtils.log("SystemTray: Showing context menu for:", parent.modelData.title);
                                 try {
-                                    contextMenu.menu = parent.modelData.menu;
-                                    contextMenu.showAt(parent);
+                                    // Safely assign menu with null check
+                                    contextMenu.menu = parent.modelData.menu || null;
+                                    if (contextMenu.menu) {
+                                        contextMenu.showAt(parent);
+                                    } else {
+                                        throw new Error("Menu is null or undefined");
+                                    }
                                 } catch (error) {
                                     DebugUtils.log("SystemTray: Error showing context menu:", error);
                                     DebugUtils.log("SystemTray: Falling back to secondaryActivate()");

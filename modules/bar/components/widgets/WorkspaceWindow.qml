@@ -160,8 +160,6 @@ PopupWindow {
                                     font.pointSize: 10
                                     font.weight: Font.Medium
                                     color: "#d0bcff"
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                    anchors.verticalCenter: parent.verticalCenter
                                     visible: mouseArea.containsMouse
                                     wrapMode: Text.WordWrap
                                     width: parent.width
@@ -180,7 +178,6 @@ PopupWindow {
                                     id: appIconsFlow
                                     width: parent.width
                                     spacing: 15
-                                    anchors.horizontalCenter: parent.horizontalCenter
                                     visible: !mouseArea.containsMouse
 
                                     Behavior on visible {
