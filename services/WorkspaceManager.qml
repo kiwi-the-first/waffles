@@ -10,7 +10,6 @@ QtObject {
     id: root
 
     property bool workspaceWindowVisible: false
-    property bool hoverMode: true  // Will be updated by InteractionSettings binding
     property bool workspaceWindowHovered: false  // Track if workspace window is being hovered
     property var workspaceData: ({})
 
@@ -70,9 +69,6 @@ QtObject {
 
     // Initialize workspace data directly
     Component.onCompleted: {
-        if (typeof InteractionSettings !== 'undefined') {
-            hoverMode = Qt.binding(() => InteractionSettings.hoverMode);
-        }
         initializeWorkspaceData();
     }
 
@@ -169,13 +165,13 @@ QtObject {
     }
 
     function startHideTimer() {
-        if (hoverMode) {
+        if (InteractionSettings.hoverMode) {
             hideTimer.restart();
         }
     }
 
     function stopHideTimer() {
-        if (hoverMode) {
+        if (InteractionSettings.hoverMode) {
             hideTimer.stop();
         }
     }

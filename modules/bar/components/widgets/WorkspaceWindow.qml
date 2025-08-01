@@ -8,6 +8,7 @@ import Quickshell
 import Quickshell.Hyprland
 import "../../../../services"
 import "../../../../utils"
+import "../../../common"
 
 PopupWindow {
     id: workspaceWindow
@@ -17,30 +18,28 @@ PopupWindow {
     visible: false
     color: "transparent"
 
+    // HoverHandler to detect hover over the entire window content
+    HoverHandler {
+        id: workspaceHover
+
+        onHoveredChanged: {
+            if (InteractionSettings.hoverMode) {
+                WorkspaceManager.workspaceWindowHovered = hovered;
+                if (hovered) {
+                    WorkspaceManager.stopHideTimer();
+                } else {
+                    WorkspaceManager.startHideTimer();
+                }
+            }
+        }
+    }
+
     Rectangle {
         anchors.fill: parent
         color: "#1c1b1f"
         radius: 12
         border.color: Qt.alpha("#938f99", 0.2)
         border.width: 1
-
-        // HoverHandler to detect hover and prevent closing
-        HoverHandler {
-            id: workspaceHover
-
-            onHoveredChanged: {
-                // Disable auto-hide on hover for testing scrolling
-                DebugUtils.log("Workspace window hovered:", hovered);
-                if (hovered) {
-                    WorkspaceManager.workspaceWindowHovered = true;
-                    WorkspaceManager.stopHideTimer();
-                } else {
-                    WorkspaceManager.workspaceWindowHovered = false;
-                    // Don't start hide timer on exit - let it stay open for testing
-                    // WorkspaceManager.startHideTimer();
-                }
-            }
-        }
 
         // Subtle shadow effect
         layer.enabled: true
@@ -259,6 +258,25 @@ PopupWindow {
                             cursorShape: Qt.PointingHandCursor
 
                             onClicked: {
+                                if (!InteractionSettings.hoverMode) {
+                                    switchToWorkspace();
+                                }
+                            }
+
+                            onEntered: {
+                                if (InteractionSettings.hoverMode) {
+                                    // In hover mode, switch workspace on hover after a delay
+                                    hoverTimer.start();
+                                }
+                            }
+
+                            onExited: {
+                                if (InteractionSettings.hoverMode) {
+                                    hoverTimer.stop();
+                                }
+                            }
+
+                            function switchToWorkspace() {
                                 // Switch to the clicked workspace using appropriate Hyprland dispatcher
                                 const workspaceId = workspaceRect.workspaceData.id;
                                 const workspaceName = workspaceRect.workspaceData.name || `Workspace ${workspaceId}`;
@@ -276,6 +294,18 @@ PopupWindow {
 
                                 // Hide the workspace window after switching
                                 WorkspaceManager.hideWorkspaceWindow();
+                            }
+
+                            // Timer to delay workspace switch in hover mode
+                            Timer {
+                                id: hoverTimer
+                                interval: 600  // Slightly longer delay for workspace switching
+                                repeat: false
+                                onTriggered: {
+                                    if (mouseArea.containsMouse && InteractionSettings.hoverMode) {
+                                        mouseArea.switchToWorkspace();
+                                    }
+                                }
                             }
                         }
                     }

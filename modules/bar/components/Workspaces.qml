@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import Quickshell.Hyprland
 import "../../../services"
 import "../../../widgets" as Widgets
+import "../../common"
 
 Rectangle {
     id: root
@@ -34,12 +35,14 @@ Rectangle {
         onCanceled: root.scale = 1.0
 
         onClicked: {
-            WorkspaceManager.toggleWorkspaceWindow();
+            if (!InteractionSettings.hoverMode) {
+                WorkspaceManager.toggleWorkspaceWindow();
+            }
         }
 
         onEntered: {
             parent.color = Qt.alpha("#d0bcff", 0.15);
-            if (WorkspaceManager.hoverMode) {
+            if (InteractionSettings.hoverMode) {
                 WorkspaceManager.stopHideTimer(); // Cancel any pending hide
                 WorkspaceManager.showWorkspaceWindow();
             }
@@ -47,7 +50,7 @@ Rectangle {
 
         onExited: {
             parent.color = Qt.alpha("#d0bcff", 0.1);
-            if (WorkspaceManager.hoverMode) {
+            if (InteractionSettings.hoverMode) {
                 WorkspaceManager.startHideTimer(); // Start delay before hiding
             }
         }

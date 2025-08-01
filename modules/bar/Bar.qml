@@ -63,6 +63,15 @@ PanelWindow {
             anchors.centerIn: parent
         }
 
+        // System Tray above status components
+        SystemTray {
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+                bottom: statusColumn.top
+                bottomMargin: 16
+            }
+        }
+
         // Status components at the bottom
         Column {
             id: statusColumn
