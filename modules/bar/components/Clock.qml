@@ -1,7 +1,7 @@
 import Quickshell
 import QtQuick
-import "../../widgets" as Widgets
-import "../.." as Root
+import "../../../widgets" as Widgets
+import "../../../services" as Root
 
 Rectangle {
     id: root

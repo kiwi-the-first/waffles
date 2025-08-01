@@ -1,0 +1,4 @@
+CalendarWindow 1.0 CalendarWindow.qml
+ActionCenterWindow 1.0 ActionCenterWindow.qml
+WorkspaceWindow 1.0 WorkspaceWindow.qml
+SearchWindow 1.0 SearchWindow.qml

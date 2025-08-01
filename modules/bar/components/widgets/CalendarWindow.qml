@@ -1,8 +1,9 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Effects
+import QtQuick.Controls
 import Quickshell
-import "../.." as Root
+import "../../../../services"
 
 PopupWindow {
     id: calendarWindow
@@ -24,13 +25,13 @@ PopupWindow {
             id: calendarHover
 
             onHoveredChanged: {
-                if (Root.CalendarManager.hoverMode) {
+                if (CalendarManager.hoverMode) {
                     if (hovered) {
-                        Root.CalendarManager.calendarHovered = true;
-                        Root.CalendarManager.stopHideTimer();
+                        CalendarManager.calendarHovered = true;
+                        CalendarManager.stopHideTimer();
                     } else {
-                        Root.CalendarManager.calendarHovered = false;
-                        Root.CalendarManager.startHideTimer();
+                        CalendarManager.calendarHovered = false;
+                        CalendarManager.startHideTimer();
                     }
                 }
             }

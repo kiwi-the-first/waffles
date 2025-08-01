@@ -1,11 +1,12 @@
 import QtQuick
 import Quickshell
+import Quickshell.Wayland
 import QtQuick.Effects
 import "components"
-import "../widgets" as Widgets
 
 PanelWindow {
     id: panel
+    WlrLayershell.namespace: "waffles-bar"
 
     anchors {
         left: true
@@ -45,6 +46,15 @@ PanelWindow {
                 top: parent.top
                 horizontalCenter: parent.horizontalCenter
                 topMargin: 20
+            }
+        }
+
+        // Search button below workspaces
+        SearchButton {
+            anchors {
+                top: parent.top
+                horizontalCenter: parent.horizontalCenter
+                topMargin: 80  // Position below workspace indicator
             }
         }
 

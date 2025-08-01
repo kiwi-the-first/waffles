@@ -1,0 +1,301 @@
+pragma ComponentBehavior: Bound
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Effects
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
+import Quickshell
+import Quickshell.Hyprland
+import "../../../../services"
+import "../../../../utils"
+
+PopupWindow {
+    id: workspaceWindow
+
+    implicitWidth: 344
+    implicitHeight: 380
+    visible: false
+    color: "transparent"
+
+    Rectangle {
+        anchors.fill: parent
+        color: "#1c1b1f"
+        radius: 12
+        border.color: Qt.alpha("#938f99", 0.2)
+        border.width: 1
+
+        // HoverHandler to detect hover and prevent closing
+        HoverHandler {
+            id: workspaceHover
+
+            onHoveredChanged: {
+                // Disable auto-hide on hover for testing scrolling
+                console.log("Workspace window hovered:", hovered);
+                if (hovered) {
+                    WorkspaceManager.workspaceWindowHovered = true;
+                    WorkspaceManager.stopHideTimer();
+                } else {
+                    WorkspaceManager.workspaceWindowHovered = false;
+                    // Don't start hide timer on exit - let it stay open for testing
+                    // WorkspaceManager.startHideTimer();
+                }
+            }
+        }
+
+        // Subtle shadow effect
+        layer.enabled: true
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowBlur: 0.8
+            shadowHorizontalOffset: 4
+            shadowVerticalOffset: 4
+            shadowColor: Qt.alpha("#000000", 0.4)
+        }
+    }
+
+    ScrollView {
+        id: scrollView
+        anchors.fill: parent
+        anchors.margins: 16
+        contentWidth: availableWidth
+        clip: true
+
+        ScrollBar.vertical.policy: ScrollBar.AsNeeded
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+
+        Column {
+            width: parent.width
+            spacing: 16
+
+            // Header
+            Text {
+                text: "Workspaces"
+                font.family: "JetBrains Mono"
+                font.pointSize: 14
+                font.weight: Font.Bold
+                color: "#d0bcff"
+                width: parent.width
+            }
+
+            // Separator
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Qt.alpha("#938f99", 0.2)
+            }
+
+            // Display all available workspaces
+            Flow {
+                width: parent.width
+                spacing: 12
+
+                Repeater {
+                    model: Object.keys(WorkspaceManager.workspaceData).filter(workspaceId => {
+                        // Only show workspaces that have clients
+                        const workspace = WorkspaceManager.workspaceData[workspaceId];
+                        return workspace && workspace.clients && workspace.clients.length > 0;
+                    }).sort((a, b) => {
+                        // Sort regular workspaces (positive numbers) first, then special workspaces
+                        const aNum = parseInt(a);
+                        const bNum = parseInt(b);
+                        if (aNum > 0 && bNum > 0)
+                            return aNum - bNum; // Both positive: normal sort
+                        if (aNum > 0 && bNum <= 0)
+                            return -1; // a positive, b special: a first
+                        if (aNum <= 0 && bNum > 0)
+                            return 1;  // a special, b positive: b first
+                        return aNum - bNum; // Both special: normal sort
+                    })
+
+                    delegate: Rectangle {
+                        id: workspaceRect
+                        width: 96  // Fixed width for consistent layout
+                        height: 80
+                        radius: 8
+                        color: mouseArea.containsMouse ? Qt.alpha("#938f99", 0.12) : Qt.alpha("#938f99", 0.08)
+                        border.width: 1
+                        border.color: Qt.alpha("#938f99", 0.15)
+
+                        required property string modelData  // The workspace ID as string
+                        property var workspaceData: WorkspaceManager.workspaceData[modelData] || {
+                            id: modelData,
+                            name: `Workspace ${modelData}`,
+                            clients: []
+                        }
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 150
+                            }
+                        }
+
+                        Item {
+                            anchors.fill: parent
+                            anchors.margins: 8
+
+                            Column {
+                                anchors.centerIn: parent
+                                width: parent.width - 16  // Account for the 8px margins on each side
+                                spacing: 4
+
+                                // Workspace name (shown on hover)
+                                Text {
+                                    id: workspaceName
+                                    text: {
+                                        const workspaceName = workspaceRect.workspaceData.name || `Workspace ${workspaceRect.workspaceData.id}`;
+
+                                        // For special workspaces, remove "special:" prefix
+                                        if (workspaceName.startsWith("special:")) {
+                                            return workspaceName.substring(8); // Remove "special:"
+                                        }
+
+                                        // For regular workspaces, show just the number
+                                        if (workspaceName.startsWith("Workspace ")) {
+                                            return workspaceRect.workspaceData.id.toString();
+                                        }
+
+                                        // For any other format, return as-is
+                                        return workspaceName;
+                                    }
+                                    font.family: "JetBrains Mono"
+                                    font.pointSize: 10
+                                    font.weight: Font.Medium
+                                    color: "#d0bcff"
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    visible: mouseArea.containsMouse
+                                    wrapMode: Text.WordWrap
+                                    width: parent.width
+                                    horizontalAlignment: Text.AlignHCenter
+
+                                    Behavior on visible {
+                                        NumberAnimation {
+                                            duration: 150
+                                            easing.type: Easing.OutQuad
+                                        }
+                                    }
+                                }
+
+                                // App icons grid (hidden on hover)
+                                Flow {
+                                    id: appIconsFlow
+                                    width: parent.width
+                                    spacing: 15
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    visible: !mouseArea.containsMouse
+
+                                    Behavior on visible {
+                                        NumberAnimation {
+                                            duration: 150
+                                            easing.type: Easing.OutQuad
+                                        }
+                                    }
+
+                                    Repeater {
+                                        model: workspaceRect.workspaceData.clients || []
+
+                                        delegate: Rectangle {
+                                            id: appIcon
+                                            width: 24  // Increased from 16
+                                            height: 24 // Increased from 16
+                                            radius: 4
+                                            color: Qt.alpha("#d0bcff", 0.2)
+                                            border.width: 1
+                                            border.color: Qt.alpha("#d0bcff", 0.3)
+
+                                            required property var modelData
+
+                                            // Try to load app icon
+                                            Image {
+                                                anchors.centerIn: parent
+                                                width: 30  // Increased from 12
+                                                height: 30 // Increased from 12
+                                                source: Icons.getAppIcon(appIcon.modelData.class || "")
+                                                fillMode: Image.PreserveAspectFit
+                                                visible: status === Image.Ready
+
+                                                onStatusChanged: {
+                                                    if (status === Image.Error) {
+                                                        fallbackIcon.visible = true;
+                                                    }
+                                                }
+                                            }
+
+                                            // Fallback text icon
+                                            Text {
+                                                id: fallbackIcon
+                                                anchors.centerIn: parent
+                                                text: (appIcon.modelData.class || "?")[0].toUpperCase()
+                                                font.family: "JetBrains Mono"
+                                                font.pointSize: 10  // Increased from 7
+                                                font.weight: Font.Bold
+                                                color: "#d0bcff"
+                                                visible: false
+                                            }
+
+                                            // Tooltip
+                                            MouseArea {
+                                                id: iconMouseArea
+                                                anchors.fill: parent
+                                                hoverEnabled: true
+
+                                                ToolTip {
+                                                    visible: iconMouseArea.containsMouse
+                                                    text: (appIcon.modelData.title || "Untitled") + (appIcon.modelData.class ? " (" + appIcon.modelData.class + ")" : "")
+                                                    delay: 500
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }  // Close Item wrapper
+
+                        // Click to switch workspace
+                        MouseArea {
+                            id: mouseArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+
+                            onClicked: {
+                                // Switch to the clicked workspace using appropriate Hyprland dispatcher
+                                const workspaceId = workspaceRect.workspaceData.id;
+                                const workspaceName = workspaceRect.workspaceData.name || `Workspace ${workspaceId}`;
+
+                                console.log("Switching to workspace:", workspaceId, "name:", workspaceName);
+
+                                // Check if this is a special workspace
+                                if (workspaceName.startsWith("special:")) {
+                                    // For special workspaces, use togglespecialworkspace
+                                    Hyprland.dispatch(`togglespecialworkspace ${workspaceName}`);
+                                } else {
+                                    // For regular workspaces, use workspace
+                                    Hyprland.dispatch(`workspace ${workspaceId}`);
+                                }
+
+                                // Hide the workspace window after switching
+                                WorkspaceManager.hideWorkspaceWindow();
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Empty state
+            Item {
+                width: parent.width
+                height: 60
+                visible: Object.keys(WorkspaceManager.workspaceData).length === 0
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "No active workspaces"
+                    font.family: "JetBrains Mono"
+                    font.pointSize: 10
+                    color: "#938f99"
+                }
+            }
+        }
+    }
+}

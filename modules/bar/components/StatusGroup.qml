@@ -4,7 +4,7 @@ import Quickshell
 import Quickshell.Services.Pipewire
 import Quickshell.Services.UPower
 import Quickshell.Io
-import "../../widgets" as Widgets
+import "../../../widgets" as Widgets
 
 Rectangle {
     id: root
@@ -54,24 +54,44 @@ Rectangle {
 
             // Network monitoring
             Timer {
-                interval: 10000
+                interval: 60000  // Check every 30 seconds instead of 10
                 running: true
                 repeat: true
                 onTriggered: networkRect.checkNetworkStatus()
             }
 
-            Process {
-                id: networkProcess
-                command: ["nmcli", "-t", "-f", "ACTIVE,SSID,SIGNAL", "dev", "wifi"]
-                running: false
-
-                stdout: StdioCollector {
-                    onStreamFinished: networkRect.parseNetworkOutput(text)
-                }
-            }
+            // Try creating process like WorkspaceManager does
+            property var networkProcess: null
 
             function checkNetworkStatus() {
-                networkProcess.running = true;
+                console.log("StatusGroup: Checking network status");
+
+                if (networkProcess) {
+                    networkProcess.destroy();
+                }
+
+                networkProcess = Qt.createQmlObject(`
+                    import QtQuick
+                    import Quickshell.Io
+                    Process {
+                        command: ["nmcli", "-t", "-f", "ACTIVE,SSID,SIGNAL", "dev", "wifi"]
+                        running: true
+
+                        stdout: StdioCollector {
+                            onStreamFinished: {
+                                networkRect.parseNetworkOutput(text);
+                            }
+                        }
+
+                        stderr: StdioCollector {
+                            onStreamFinished: {
+                                if (text.length > 0) {
+                                    console.log("StatusGroup: Network error:", text);
+                                }
+                            }
+                        }
+                    }
+                `, networkRect);
             }
 
             function parseNetworkOutput(output) {
@@ -93,6 +113,8 @@ Rectangle {
                 connectionStatus = connected ? "connected" : "disconnected";
                 ssid = activeSSID;
                 signalStrength = signal;
+
+                console.log("StatusGroup:", connectionStatus === "connected" ? `Connected to ${ssid} (${signalStrength}%)` : "Disconnected");
             }
 
             Behavior on color {

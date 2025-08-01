@@ -1,7 +1,9 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import QtQuick.Layouts
 import Quickshell.Hyprland
-import "../../widgets" as Widgets
+import "../../../services"
+import "../../../widgets" as Widgets
 
 Rectangle {
     id: root
@@ -27,12 +29,27 @@ Rectangle {
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
 
+        onPressed: root.scale = 0.95
+        onReleased: root.scale = 1.0
+        onCanceled: root.scale = 1.0
+
+        onClicked: {
+            WorkspaceManager.toggleWorkspaceWindow();
+        }
+
         onEntered: {
             parent.color = Qt.alpha("#d0bcff", 0.15);
+            if (WorkspaceManager.hoverMode) {
+                WorkspaceManager.stopHideTimer(); // Cancel any pending hide
+                WorkspaceManager.showWorkspaceWindow();
+            }
         }
 
         onExited: {
             parent.color = Qt.alpha("#d0bcff", 0.1);
+            if (WorkspaceManager.hoverMode) {
+                WorkspaceManager.startHideTimer(); // Start delay before hiding
+            }
         }
     }
 

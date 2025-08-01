@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
-import "../widgets" as Widgets
-import ".." as Root
+import "../common"
+import "../../widgets" as Widgets
 
 Rectangle {
     id: settingsPanel
@@ -32,23 +32,23 @@ Rectangle {
                 width: 100
                 height: 32
                 radius: 8
-                color: Root.InteractionSettings.hoverMode ? "#d0bcff" : Qt.alpha("#938f99", 0.1)
+                color: InteractionSettings.hoverMode ? "#d0bcff" : Qt.alpha("#938f99", 0.1)
                 border.width: 1
-                border.color: Root.InteractionSettings.hoverMode ? "#d0bcff" : Qt.alpha("#938f99", 0.2)
+                border.color: InteractionSettings.hoverMode ? "#d0bcff" : Qt.alpha("#938f99", 0.2)
 
                 Text {
                     anchors.centerIn: parent
                     text: "Hover"
                     font.family: "JetBrains Mono"
                     font.pointSize: 10
-                    color: Root.InteractionSettings.hoverMode ? "#1c1b1f" : "#e6e0e9"
+                    color: InteractionSettings.hoverMode ? "#1c1b1f" : "#e6e0e9"
                 }
 
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
-                        Root.InteractionSettings.setGlobalHoverMode(true);
+                        InteractionSettings.setGlobalHoverMode(true);
                     }
                 }
             }
@@ -57,30 +57,30 @@ Rectangle {
                 width: 100
                 height: 32
                 radius: 8
-                color: !Root.InteractionSettings.hoverMode ? "#d0bcff" : Qt.alpha("#938f99", 0.1)
+                color: !InteractionSettings.hoverMode ? "#d0bcff" : Qt.alpha("#938f99", 0.1)
                 border.width: 1
-                border.color: !Root.InteractionSettings.hoverMode ? "#d0bcff" : Qt.alpha("#938f99", 0.2)
+                border.color: !InteractionSettings.hoverMode ? "#d0bcff" : Qt.alpha("#938f99", 0.2)
 
                 Text {
                     anchors.centerIn: parent
                     text: "Click"
                     font.family: "JetBrains Mono"
                     font.pointSize: 10
-                    color: !Root.InteractionSettings.hoverMode ? "#1c1b1f" : "#e6e0e9"
+                    color: !InteractionSettings.hoverMode ? "#1c1b1f" : "#e6e0e9"
                 }
 
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
-                        Root.InteractionSettings.setGlobalHoverMode(false);
+                        InteractionSettings.setGlobalHoverMode(false);
                     }
                 }
             }
         }
 
         Text {
-            text: Root.InteractionSettings.hoverMode ? "Widgets open on mouse hover" : "Widgets open on mouse click"
+            text: InteractionSettings.hoverMode ? "Widgets open on mouse hover" : "Widgets open on mouse click"
             font.family: "JetBrains Mono"
             font.pointSize: 9
             color: Qt.alpha("#938f99", 0.8)

@@ -3,8 +3,8 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Effects
 import Quickshell
-import "../.." as Root
-import "../../settings" as Settings
+import "../../../../services"
+import "../../../settings" as Settings
 
 PopupWindow {
     id: actionCenterWindow
@@ -26,13 +26,13 @@ PopupWindow {
             id: actionCenterHover
 
             onHoveredChanged: {
-                if (Root.ActionCenterManager.hoverMode) {
+                if (ActionCenterManager.hoverMode) {
                     if (hovered) {
-                        Root.ActionCenterManager.actionCenterHovered = true;
-                        Root.ActionCenterManager.stopHideTimer();
+                        ActionCenterManager.actionCenterHovered = true;
+                        ActionCenterManager.stopHideTimer();
                     } else {
-                        Root.ActionCenterManager.actionCenterHovered = false;
-                        Root.ActionCenterManager.startHideTimer();
+                        ActionCenterManager.actionCenterHovered = false;
+                        ActionCenterManager.startHideTimer();
                     }
                 }
             }

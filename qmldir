@@ -1,3 +1,2 @@
-singleton CalendarManager 1.0 CalendarManager.qml
-singleton ActionCenterManager 1.0 ActionCenterManager.qml
-singleton InteractionSettings 1.0 InteractionSettings.qml
+# Root qmldir - QuickShell waffles_shell configuration
+module waffles_shell

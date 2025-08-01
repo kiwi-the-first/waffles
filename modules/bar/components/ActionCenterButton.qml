@@ -1,8 +1,8 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Effects
-import "../../widgets" as Widgets
-import "../.." as Root
+import "../../../services"
+import "../../../widgets" as Widgets
 
 Rectangle {
     id: root
@@ -15,7 +15,7 @@ Rectangle {
     border.width: 1
     border.color: Qt.alpha("#938f99", 0.08)
 
-    property bool expanded: Root.ActionCenterManager.actionCenterVisible
+    property bool expanded: ActionCenterManager.actionCenterVisible
 
     Behavior on color {
         ColorAnimation {
@@ -31,19 +31,19 @@ Rectangle {
         cursorShape: Qt.PointingHandCursor
 
         onClicked: {
-            Root.ActionCenterManager.toggleActionCenter();
+            ActionCenterManager.toggleActionCenter();
         }
 
         onEntered: {
-            if (Root.ActionCenterManager.hoverMode) {
-                Root.ActionCenterManager.stopHideTimer(); // Cancel any pending hide
-                Root.ActionCenterManager.showActionCenter();
+            if (ActionCenterManager.hoverMode) {
+                ActionCenterManager.stopHideTimer(); // Cancel any pending hide
+                ActionCenterManager.showActionCenter();
             }
         }
 
         onExited: {
-            if (Root.ActionCenterManager.hoverMode) {
-                Root.ActionCenterManager.startHideTimer(); // Start delay before hiding
+            if (ActionCenterManager.hoverMode) {
+                ActionCenterManager.startHideTimer(); // Start delay before hiding
             }
         }
     }
