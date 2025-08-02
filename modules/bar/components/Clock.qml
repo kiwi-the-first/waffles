@@ -96,7 +96,7 @@ Rectangle {
             animate: true
 
             horizontalAlignment: Text.AlignHCenter
-            text: Qt.formatDateTime(systemClock.date, "HH\nmm\n\nddd\nd")
+            text: Qt.formatDateTime(systemClock.date, "HH\nmm")
             color: "#cac4d0"
             font.pointSize: 13
             font.family: "JetBrains Mono"

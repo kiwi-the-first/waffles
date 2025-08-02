@@ -1,4 +1,6 @@
 module widgets
-StyledText 1.0 StyledText.qml
+CornerThingy 1.0 CornerThingy.qml
 MaterialIcon 1.0 MaterialIcon.qml
 StateLayer 1.0 StateLayer.qml
+StyledText 1.0 StyledText.qml
+VerticalSlider 1.0 VerticalSlider.qml

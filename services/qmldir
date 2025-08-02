@@ -3,4 +3,9 @@ singleton ActionCenterManager 1.0 ActionCenterManager.qml
 singleton SettingsManager 1.0 SettingsManager.qml
 singleton WorkspaceManager 1.0 WorkspaceManager.qml
 singleton SearchManager 1.0 SearchManager.qml
+singleton Audio 1.0 Audio.qml
+singleton Brightness 1.0 Brightness.qml
+singleton IPCManager 1.0 IPCManager.qml
+singleton OSDManager 1.0 OSDManager.qml
+singleton Players 1.0 Players.qml
 WorkspaceDataProvider 1.0 WorkspaceDataProvider.qml

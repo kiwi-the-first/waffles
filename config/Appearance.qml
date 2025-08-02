@@ -90,6 +90,6 @@ QtObject {
 
     // Debug configuration
     component Debug: QtObject {
-        property bool enabled: true
+        property bool enabled: false
     }
 }
