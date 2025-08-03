@@ -1,8 +1,8 @@
 import QtQuick
 import QtQuick.Effects
 import "../../../widgets"
-import "../../../services"
 import "../../../config"
+import "../../../services"
 
 Rectangle {
     id: searchButton
@@ -10,9 +10,9 @@ Rectangle {
     width: 36
     height: 36
     radius: Appearance.rounding.large
-    color: mouseArea.containsMouse ? Qt.alpha(Colours.semantic.accent, 0.12) : Qt.alpha(Colours.semantic.accent, 0.08)
+    color: mouseArea.containsMouse ? Qt.alpha(Colours.m3primary, 0.12) : Qt.alpha(Colours.m3primary, 0.08)
     border.width: 1
-    border.color: Qt.alpha(Colours.semantic.accent, 0.2)
+    border.color: Qt.alpha(Colours.m3primary, 0.2)
 
     // Hover effect
     Behavior on color {
@@ -27,7 +27,7 @@ Rectangle {
         anchors.centerIn: parent
         text: "search"
         font.pointSize: Appearance.font.size.title
-        color: Colours.semantic.accent
+        color: Colours.m3primary
     }
 
     // Mouse interaction
@@ -40,15 +40,5 @@ Rectangle {
         onClicked: {
             SearchManager.toggleSearch();
         }
-    }
-
-    // Subtle glow effect when active
-    layer.enabled: SearchManager.searchVisible
-    layer.effect: MultiEffect {
-        shadowEnabled: true
-        shadowBlur: 0.6
-        shadowHorizontalOffset: 0
-        shadowVerticalOffset: 0
-        shadowColor: Qt.alpha(Colours.semantic.accent, 0.4)
     }
 }

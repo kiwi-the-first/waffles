@@ -83,6 +83,27 @@ Singleton {
         }
     }
 
+    // Search IPC Handler
+    IpcHandler {
+        target: "search"
+        enabled: true
+
+        function show(): void {
+            DebugUtils.log("IPC: Search Show called");
+            SearchManager.showSearch();
+        }
+
+        function hide(): void {
+            DebugUtils.log("IPC: Search Hide called");
+            SearchManager.hideSearch();
+        }
+
+        function toggle(): void {
+            DebugUtils.log("IPC: Search Toggle called");
+            SearchManager.toggleSearch();
+        }
+    }
+
     // Theme IPC Handler
     IpcHandler {
         target: "theme"

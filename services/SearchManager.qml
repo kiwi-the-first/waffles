@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 pragma Singleton
 import QtQuick
 import Quickshell
@@ -6,32 +7,20 @@ QtObject {
     id: searchManager
 
     property bool searchVisible: false
-    property bool hoverMode: false
-    property bool searchHovered: false
+    property var searchWindow: null
 
-    property Timer hideTimer: Timer {
-        id: hideTimer
-        interval: 2000  // 2 seconds delay
-        repeat: false
-        onTriggered: {
-            if (searchManager.hoverMode && !searchManager.searchHovered) {
-                searchManager.searchVisible = false;
-            }
-        }
-    }
-
+    // Methods to control search visibility
     function showSearch() {
         searchVisible = true;
-        if (hoverMode) {
-            stopHideTimer();
+        if (searchWindow && searchWindow.show) {
+            searchWindow.show();
         }
     }
 
     function hideSearch() {
-        if (hoverMode) {
-            startHideTimer();
-        } else {
-            searchVisible = false;
+        searchVisible = false;
+        if (searchWindow && searchWindow.hide) {
+            searchWindow.hide();
         }
     }
 
@@ -43,23 +32,8 @@ QtObject {
         }
     }
 
-    function startHideTimer() {
-        if (hoverMode) {
-            hideTimer.restart();
-        }
-    }
-
-    function stopHideTimer() {
-        hideTimer.stop();
-    }
-
-    // Enable hover mode automatically after showing search
-    onSearchVisibleChanged: {
-        if (searchVisible) {
-            hoverMode = true;
-        } else {
-            hoverMode = false;
-            searchHovered = false;
-        }
+    // Set the search window reference
+    function setSearchWindow(window) {
+        searchWindow = window;
     }
 }

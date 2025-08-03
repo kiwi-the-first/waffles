@@ -210,10 +210,13 @@ PopupWindow {
                                                 source: Icons.getAppIcon(appIcon.modelData.class || "")
                                                 fillMode: Image.PreserveAspectFit
                                                 visible: status === Image.Ready
+                                                cache: true
+                                                asynchronous: true
 
                                                 onStatusChanged: {
                                                     if (status === Image.Error) {
                                                         fallbackIcon.visible = true;
+                                                        // Suppress console warnings by not logging the error
                                                     }
                                                 }
                                             }

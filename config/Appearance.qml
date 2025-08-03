@@ -1,6 +1,7 @@
 pragma Singleton
 
 import QtQuick
+import "../services"
 
 QtObject {
     id: root
@@ -108,6 +109,6 @@ QtObject {
 
     // Debug configuration
     component Debug: QtObject {
-        property bool enabled: false
+        property bool enabled: PersistentSettings.settings.debugEnabled
     }
 }

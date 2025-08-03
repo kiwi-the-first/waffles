@@ -25,29 +25,31 @@ QtObject {
         }
     }
 
-    function fetchClientsData() {
-        var process = Qt.createQmlObject(`
-            import QtQuick
-            import Quickshell.Io
-            Process {
-                command: ["hyprctl", "clients", "-j"]
-                running: true
+    // Persistent process for better resource management
+    property var clientsProcess: Process {
+        command: ["hyprctl", "clients", "-j"]
+        running: false
 
-                stdout: StdioCollector {
-                    onStreamFinished: {
-                        root.parseClientsOutput(text);
-                    }
-                }
-
-                stderr: StdioCollector {
-                    onStreamFinished: {
-                        if (text.length > 0) {
-                            // Handle errors silently or log to file if needed
-                        }
-                    }
-                }
+        stdout: StdioCollector {
+            onStreamFinished: {
+                root.parseClientsOutput(text);
             }
-        `, root);
+        }
+
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (text.length > 0)
+                // Handle errors silently or log to file if needed
+                {}
+            }
+        }
+    }
+
+    function fetchClientsData() {
+        // Reuse persistent process instead of creating new ones
+        if (!clientsProcess.running) {
+            clientsProcess.running = true;
+        }
     }
 
     // Listen to Hyprland events for real-time updates

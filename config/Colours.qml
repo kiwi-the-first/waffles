@@ -2,14 +2,23 @@ pragma Singleton
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import "../services"
 
 QtObject {
     id: root
 
     // Theme configuration
-    property string currentTheme: "dark" // "light", "dark", or "dynamic"
+    property string currentTheme: PersistentSettings.settings.darkMode ? "dark" : "light" // "light", "dark", or "dynamic"
     property bool isDarkMode: currentTheme === "dark" || (currentTheme === "dynamic" && systemIsDark)
     property bool systemIsDark: true // This would be set by system detection
+
+    // Sync theme changes back to persistent settings
+    onCurrentThemeChanged: {
+        var shouldBeDark = currentTheme === "dark" || (currentTheme === "dynamic" && systemIsDark);
+        if (PersistentSettings.settings.darkMode !== shouldBeDark) {
+            PersistentSettings.settings.darkMode = shouldBeDark;
+        }
+    }
 
     // Helper functions for alpha transparency and interactive states
     function alpha(color, opacity) {

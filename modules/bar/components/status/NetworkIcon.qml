@@ -4,6 +4,8 @@ import Quickshell.Io
 import "../../../../widgets" as Widgets
 import "../../../../utils"
 import "../../../../config"
+import "../../../../services"
+import "../widgets" as StatusWidgets
 
 Rectangle {
     id: networkRect
@@ -17,59 +19,18 @@ Rectangle {
     property int signalStrength: 0
     property bool isConnected: connectionStatus === "connected"
 
-    // Network monitoring
-    Timer {
-        interval: 60000  // Check every minute
-        running: true
-        repeat: true
-        onTriggered: networkRect.checkNetworkStatus()
-    }
-
-    property var networkProcess: null
-
-    function checkNetworkStatus() {
-        DebugUtils.log("NetworkIcon: Checking network status");
-
-        if (networkProcess) {
-            networkProcess.destroy();
-        }
-
-        networkProcess = Qt.createQmlObject(`
-            import QtQuick
-            import Quickshell.Io
-            Process {
-                command: ["nmcli", "-t", "-f", "ACTIVE,SSID,SIGNAL", "dev", "wifi"]
-                running: true
-
-                stdout: StdioCollector {
-                    onStreamFinished: {
-                        networkRect.parseNetworkOutput(text);
-                    }
-                }
-
-                stderr: StdioCollector {
-                    onStreamFinished: {
-                        if (text.length > 0) {
-                            DebugUtils.error("NetworkIcon: Network error:", text);
-                        }
-                    }
-                }
-            }
-        `, networkRect);
-    }
-
-    function parseNetworkOutput(output) {
-        const lines = output.trim().split('\n');
+    // Get network status from NetworkManager instead of scanning separately
+    function updateFromNetworkManager() {
         let connected = false;
         let activeSSID = "";
         let signal = 0;
 
-        for (let line of lines) {
-            const parts = line.split(':');
-            if (parts.length >= 3 && parts[0] === 'yes') {
+        // Find the active network from NetworkManager's data
+        for (let network of NetworkManager.availableNetworks) {
+            if (network.isActive) {
                 connected = true;
-                activeSSID = parts[1];
-                signal = parseInt(parts[2]) || 0;
+                activeSSID = network.ssid;
+                signal = network.signal;
                 break;
             }
         }
@@ -77,8 +38,14 @@ Rectangle {
         connectionStatus = connected ? "connected" : "disconnected";
         ssid = activeSSID;
         signalStrength = signal;
+    }
 
-        DebugUtils.log("NetworkIcon:", connectionStatus === "connected" ? `Connected to ${ssid} (${signalStrength}%)` : "Disconnected");
+    // Listen for changes in NetworkManager's network list
+    Connections {
+        target: NetworkManager
+        function onAvailableNetworksChanged() {
+            networkRect.updateFromNetworkManager();
+        }
     }
 
     Behavior on color {
@@ -93,6 +60,24 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
+
+        onEntered: {
+            if (NetworkManager.hoverMode) {
+                NetworkManager.showNetworkSelector();
+            }
+        }
+
+        onExited: {
+            if (NetworkManager.hoverMode) {
+                NetworkManager.startHideTimer();
+            }
+        }
+
+        onClicked: {
+            if (!NetworkManager.hoverMode) {
+                NetworkManager.networkSelectorVisible = !NetworkManager.networkSelectorVisible;
+            }
+        }
     }
 
     Widgets.MaterialIcon {
@@ -115,5 +100,5 @@ Rectangle {
         fill: networkHover.containsMouse ? 1 : 0
     }
 
-    Component.onCompleted: checkNetworkStatus()
+    Component.onCompleted: networkRect.updateFromNetworkManager()
 }

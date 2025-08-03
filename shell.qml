@@ -14,6 +14,9 @@ ShellRoot {
 
     Bar {
         id: mainBar
+
+        // Handle keyboard focus when password dialog or search window is visible
+        WlrLayershell.keyboardFocus: (NetworkManager.passwordDialogVisible || SearchManager.searchVisible) ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
     }
 
     Widgets.CalendarWindow {
@@ -34,6 +37,28 @@ ShellRoot {
         visible: ActionCenterManager.actionCenterVisible
     }
 
+    Widgets.NetworkSelectorWindow {
+        id: networkSelectorWindow
+        objectName: "networkSelectorWindow"
+        anchor.window: mainBar
+        anchor.rect.x: 70
+        anchor.rect.y: 800  // Position near the network icon
+        visible: NetworkManager.networkSelectorVisible
+    }
+
+    Widgets.SearchWindow {
+        id: searchWindow
+        objectName: "searchWindow"
+        anchor.window: mainBar
+        anchor.rect.x: (mainBar.screen.width - searchWindow.implicitWidth) / 2  // Center horizontally
+        anchor.rect.y: (mainBar.screen.height - searchWindow.implicitHeight) / 2  // Center vertically
+        visible: SearchManager.searchVisible
+
+        Component.onCompleted: {
+            SearchManager.setSearchWindow(searchWindow);
+        }
+    }
+
     Widgets.SettingsWindow {
         id: settingsWindow
         objectName: "settingsWindow"
@@ -51,21 +76,6 @@ ShellRoot {
         anchor.rect.y: -4   // Position above the calendar
         visible: WorkspaceManager.workspaceWindowVisible
     }
-
-    // Search window overlay - using FloatingWindow with proper namespace
-    // FloatingWindow {
-    //     id: searchWindowContainer
-    //     objectName: "searchWindowContainer"
-    //     screen: mainBar.screen
-    //     visible: SearchManager.searchVisible
-    //     color: "transparent"
-    //     WlrLayershell.namespace: "waffles-launcher"
-    //     WlrLayershell.layer: WlrLayer.Overlay
-    //     WlrLayershell.exclusionMode: ExclusionMode.Ignore
-    //     WlrLayershell.keyboardFocus: SearchManager.searchVisible ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
-    //
-    //     Widgets.SearchWindow {}
-    // }
 
     // OSD window for volume and brightness controls
     Widgets.OSDWindowPopup {

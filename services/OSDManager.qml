@@ -8,7 +8,7 @@ Singleton {
     id: root
 
     property bool osdVisible: false
-    property real hideDelay: 2000
+    property real hideDelay: 1500  // Reduced from 2000ms to 1.5s for better UX
     property bool hovered: false
     property string currentType: "volume" // "volume" or "brightness"
 

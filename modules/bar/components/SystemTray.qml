@@ -22,7 +22,7 @@ Column {
         visible: false
         color: "transparent"
 
-        property var menu
+        property var menu: null
         property var anchorItem: null
         property bool menuHovered: false
 
@@ -191,7 +191,7 @@ Column {
 
                         Timer {
                             id: menuHoverTimer
-                            interval: 800  // Slightly longer delay for menu items
+                            interval: 500  // Reduced from 800ms to 500ms for better responsiveness
                             repeat: false
                             onTriggered: {
                                 if (menuMouseArea.containsMouse && InteractionSettings.hoverMode && menuEntry.modelData && !menuEntry.modelData.isSeparator) {

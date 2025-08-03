@@ -17,6 +17,7 @@ QtObject {
             // Browsers
             "firefox": "firefox",
             "google-chrome": "google-chrome",
+            "com.google.chrome": "google-chrome",
             "chromium": "chromium",
             "brave": "brave-browser",
             "zen": "zen-browser",
@@ -28,27 +29,67 @@ QtObject {
             "atom": "atom",
             "sublime": "sublime-text",
             "jetbrains": "jetbrains-toolbox",
+            "jetbrains-idea-ce": "intellij-idea-ce",
+            "android-studio": "android-studio",
+            "jetbrains-studio": "android-studio",
+            "cmake-gui": "cmake",
+            "designer": "designer",
+            "dev.zed.zed": "zed",
 
             // Terminals
             "kitty": "kitty",
             "alacritty": "alacritty",
             "gnome-terminal": "gnome-terminal",
+            "org.gnome.console": "gnome-terminal",
+            "org.gnome.terminal": "gnome-terminal",
             "konsole": "konsole",
             "xterm": "xterm",
             "terminator": "terminator",
+            "btop": "htop",
 
-            // System
+            // System & Utilities
             "nautilus": "file-manager",
             "org.gnome.nautilus": "file-manager",
             "dolphin": "folder",
             "thunar": "folder",
             "pcmanfm": "folder",
+            "blueman-manager": "bluetooth",
+            "blueman-adapters": "bluetooth",
+            "bluetooth-sendto": "bluetooth",
+            "avahi-discover": "network-workgroup",
 
-            // Media
+            // Media & Entertainment
             "vlc": "vlc",
             "mpv": "mpv",
             "spotify": "spotify",
             "discord": "discord",
+            "com.obsproject.studio": "obs-studio",
+
+            // Office & Productivity
+            "assistant": "assistant",
+
+            // Remote Access & Network
+            "bssh": "ssh",
+            "bvnc": "krdc",
+            "gcm-import": "preferences-system",
+
+            // System Configuration
+            "breezestyleconfig": "preferences-desktop-theme",
+
+            // Generic Applications
+            "electron34": "application-x-executable",
+
+            // Text Editors
+            "org.gnome.texteditor": "text-editor",
+            "org.gnome.gedit": "text-editor",
+            "gedit": "text-editor",
+            "mousepad": "text-editor",
+            "leafpad": "text-editor",
+            "kate": "kate",
+            "geany": "geany",
+            "nano": "text-editor",
+            "vim": "text-editor",
+            "emacs": "emacs",
 
             // Office
             "libreoffice": "libreoffice-startcenter",
@@ -84,7 +125,10 @@ QtObject {
         // Try some common variations
         const variations = [lowerClass.replace(/\./g, "-")  // org.gnome.nautilus -> org-gnome-nautilus
             , lowerClass.split(".").pop()     // org.gnome.nautilus -> nautilus
-            , lowerClass.split("-")[0]         // get first part before dash
+            , lowerClass.split("-")[0]        // get first part before dash
+            , lowerClass.replace(/^com\./, "") // com.google.chrome -> google.chrome
+            , lowerClass.replace(/^org\./, "") // org.gnome.console -> gnome.console
+            , lowerClass.replace(/^dev\./, "")  // dev.zed.zed -> zed.zed
         ];
 
         for (const variation of variations) {

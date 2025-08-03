@@ -1,338 +1,505 @@
 pragma ComponentBehavior: Bound
-
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Effects
 import Quickshell
+import Quickshell.Wayland
+import Quickshell.Widgets
 import "../../../../services"
 import "../../../../utils"
+import "../../../../widgets" as Widgets
 import "../../../../config"
 
-Rectangle {
+PopupWindow {
     id: searchWindow
 
-    width: 400
-    height: searchInput.text.length > 0 ? 300 : 60
-    visible: SearchManager.searchVisible
-    color: Colours.semantic.backgroundMain
-    radius: Appearance.rounding.large
-    border.color: Qt.alpha("#938f99", 0.2)
-    border.width: 1
+    implicitWidth: 500
+    implicitHeight: Math.max(400, Math.min(600, searchList.contentHeight + 120))
+    visible: false
+    color: "transparent"
 
-    // Position the search window - center on screen like reference implementations
-    anchors.centerIn: parent
+    property string searchText: ""
+    property var searchResults: []
+    property bool searchActive: false
 
-    // Focus handling - simplified for Wayland compatibility
-    focus: SearchManager.searchVisible
-
-    Behavior on height {
-        NumberAnimation {
-            duration: 200
-            easing.type: Easing.OutCubic
+    // Handle window visibility changes to manage focus
+    onVisibleChanged: {
+        if (visible) {
+            DebugUtils.debug("SearchWindow became visible, setting focus");
+            // Use the end-4 approach: direct focus binding
+            searchInput.forceActiveFocus();
         }
     }
 
-    // HoverHandler to detect hover and prevent closing
-    HoverHandler {
-        id: searchHover
+    // Methods to show/hide the search window
+    function showSearch() {
+        DebugUtils.debug("SearchWindow.showSearch() called");
+        searchWindow.visible = true;
+        SearchManager.searchVisible = true;
+        // Direct focus like end-4/dots-hyprland
+        searchInput.forceActiveFocus();
+    }
 
-        onHoveredChanged: {
-            if (SearchManager.hoverMode) {
-                if (hovered) {
-                    SearchManager.searchHovered = true;
-                    SearchManager.stopHideTimer();
-                } else {
-                    SearchManager.searchHovered = false;
-                    SearchManager.startHideTimer();
-                }
+    function hideSearch() {
+        DebugUtils.debug("SearchWindow.hideSearch() called");
+        searchWindow.visible = false;
+        searchInput.text = "";
+        searchResults = [];
+        SearchManager.searchVisible = false;
+    }
+
+    // Sync with SearchManager
+    Connections {
+        target: SearchManager
+        function onSearchVisibleChanged() {
+            if (SearchManager.searchVisible && !searchWindow.visible) {
+                searchWindow.showSearch();
+            } else if (!SearchManager.searchVisible && searchWindow.visible) {
+                searchWindow.hideSearch();
             }
         }
     }
 
-    // Subtle shadow effect
-    layer.enabled: true
-    layer.effect: MultiEffect {
-        shadowEnabled: true
-        shadowBlur: 0.8
-        shadowHorizontalOffset: 4
-        shadowVerticalOffset: 4
-        shadowColor: Qt.alpha("#000000", 0.4)
-    }
-
-    ColumnLayout {
+    Rectangle {
         anchors.fill: parent
-        anchors.margins: 16
-        spacing: 12
+        color: Colours.m3surface
+        radius: Appearance.rounding.large
+        border.color: Qt.alpha("#938f99", 0.2)
+        border.width: 1
 
-        // Search input
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 40
-            color: Qt.alpha(Colours.semantic.accent, 0.05)
-            radius: Appearance.rounding.normal
-            border.width: 1
-            border.color: searchInput.activeFocus ? Colours.semantic.accent : Qt.alpha("#938f99", 0.3)
-
-            Behavior on border.color {
-                ColorAnimation {
-                    duration: 150
-                    easing.type: Easing.OutCubic
-                }
-            }
-
-            RowLayout {
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                spacing: 8
-
-                Text {
-                    text: "search"
-                    font.family: Appearance.font.family.materialOutlined
-                    font.pointSize: Appearance.font.size.title
-                    color: Colours.semantic.accent
-                }
-
-                TextField {
-                    id: searchInput
-                    Layout.fillWidth: true
-                    placeholderText: "Search applications, calculate, or run commands..."
-                    font.family: Appearance.font.family.mono
-                    font.pointSize: Appearance.font.size.normal
-                    color: Colours.semantic.textPrimary
-                    placeholderTextColor: Qt.alpha("#938f99", 0.7)
-                    selectByMouse: true
-
-                    // Simplified focus for Wayland compatibility
-                    focus: true
-
-                    // Standard TextField properties
-                    renderType: Text.NativeRendering
-                    selectedTextcolor: Colours.semantic.textPrimary
-                    selectionColor: Qt.alpha(Colours.semantic.accent, 0.3)
-
-                    background: Rectangle {
-                        color: "transparent"
-                    }
-
-                    // Clear text when search window is hidden
-                    Connections {
-                        target: SearchManager
-                        function onSearchVisibleChanged() {
-                            if (!SearchManager.searchVisible) {
-                                searchInput.text = "";
-                            }
-                        }
-                    }
-
-                    onAccepted: {
-                        if (text.trim().length > 0) {
-                            searchWindow.executeSearch(text.trim());
-                        }
-                    }
-
-                    Keys.onPressed: event => {
-                        if (event.key === Qt.Key_Escape) {
-                            SearchManager.hideSearch();
-                            event.accepted = true;
-                        }
-                    }
-                }
-            }
+        // Subtle shadow effect
+        layer.enabled: true
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowBlur: 0.8
+            shadowHorizontalOffset: 4
+            shadowVerticalOffset: 4
+            shadowColor: Colours.alpha(Colours.m3shadow, 0.25)
         }
-        // Search results area (shown when there's input)
-        Rectangle {
-            id: resultsArea
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            visible: searchInput.text.length > 0
-            color: Qt.alpha("#938f99", 0.03)
-            radius: Appearance.rounding.normal
-            border.width: 1
-            border.color: Qt.alpha("#938f99", 0.1)
 
-            ScrollView {
+        // Focus scope to manage keyboard focus within the search window
+        FocusScope {
+            anchors.fill: parent
+            focus: searchWindow.visible
+
+            // Global keyboard handler inspired by end-4/dots-hyprland
+            Keys.onPressed: event => {
+                // Prevent Esc from being handled here
+                if (event.key === Qt.Key_Escape) {
+                    return;
+                }
+
+                // Handle Backspace: focus and delete character if not focused
+                if (event.key === Qt.Key_Backspace) {
+                    if (!searchInput.activeFocus) {
+                        searchInput.forceActiveFocus();
+                        if (event.modifiers & Qt.ControlModifier) {
+                            // Delete word before cursor
+                            let text = searchInput.text;
+                            let pos = searchInput.cursorPosition;
+                            if (pos > 0) {
+                                let left = text.slice(0, pos);
+                                let match = left.match(/(\s*\S+)\s*$/);
+                                let deleteLen = match ? match[0].length : 1;
+                                searchInput.text = text.slice(0, pos - deleteLen) + text.slice(pos);
+                                searchInput.cursorPosition = pos - deleteLen;
+                            }
+                        } else {
+                            // Delete character before cursor if any
+                            if (searchInput.cursorPosition > 0) {
+                                searchInput.text = searchInput.text.slice(0, searchInput.cursorPosition - 1) + searchInput.text.slice(searchInput.cursorPosition);
+                                searchInput.cursorPosition -= 1;
+                            }
+                        }
+                        // Always move cursor to end after programmatic edit
+                        searchInput.cursorPosition = searchInput.text.length;
+                        event.accepted = true;
+                    }
+                    return;
+                }
+
+                // Only handle visible printable characters (ignore control chars, arrows, etc.)
+                if (event.text && event.text.length === 1 && event.key !== Qt.Key_Enter && event.key !== Qt.Key_Return && event.text.charCodeAt(0) >= 0x20) {
+                    if (!searchInput.activeFocus) {
+                        searchInput.forceActiveFocus();
+                        // Insert the character at the cursor position
+                        searchInput.text = searchInput.text.slice(0, searchInput.cursorPosition) + event.text + searchInput.text.slice(searchInput.cursorPosition);
+                        searchInput.cursorPosition += 1;
+                        event.accepted = true;
+                    }
+                }
+            }
+
+            ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 8
-                contentWidth: availableWidth
-                clip: true
+                anchors.margins: 20
+                spacing: 12
 
-                Column {
-                    width: parent.width
-                    spacing: 4
+                // Header with search input
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 8
 
-                    // Example results
-                    Repeater {
-                        model: searchWindow.getSearchResults(searchInput.text)
-                        delegate: Rectangle {
-                            id: resultItem
-                            required property var modelData
+                    // Title
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 12
 
-                            width: parent.width
-                            height: 32
-                            color: searchResultMouse.containsMouse ? Qt.alpha(Colours.semantic.accent, 0.08) : "transparent"
-                            radius: Appearance.rounding.small
+                        Widgets.MaterialIcon {
+                            text: "search"
+                            color: Colours.m3primary
+                            font.pointSize: Appearance.font.size.larger
+                        }
 
-                            Behavior on color {
-                                ColorAnimation {
-                                    duration: 100
-                                    easing.type: Easing.OutCubic
-                                }
-                            }
+                        Widgets.StyledText {
+                            text: "Search"
+                            font.pointSize: Appearance.font.size.medium
+                            font.weight: Font.Medium
+                            color: Colours.m3onSurface
+                            Layout.fillWidth: true
+                        }
 
-                            RowLayout {
-                                anchors.fill: parent
-                                anchors.leftMargin: 8
-                                anchors.rightMargin: 8
-                                spacing: 8
-
-                                Text {
-                                    text: resultItem.modelData.icon || "app_registration"
-                                    font.family: Appearance.font.family.materialOutlined
-                                    font.pointSize: Appearance.font.size.large
-                                    color: Colours.semantic.accent
-                                }
-
-                                Text {
-                                    Layout.fillWidth: true
-                                    text: resultItem.modelData.name || "Search Result"
-                                    font.family: Appearance.font.family.mono
-                                    font.pointSize: Appearance.font.size.smaller
-                                    color: Colours.semantic.textPrimary
-                                    elide: Text.ElideRight
-                                }
-
-                                Text {
-                                    text: resultItem.modelData.type || "App"
-                                    font.family: Appearance.font.family.mono
-                                    font.pointSize: Appearance.font.size.small
-                                    color: Colours.semantic.borderStrong
-                                }
-                            }
+                        // Close button
+                        Rectangle {
+                            Layout.preferredWidth: 32
+                            Layout.preferredHeight: 32
+                            radius: Appearance.rounding.normal
+                            color: closeButton.containsMouse ? Colours.alpha(Colours.m3error, 0.12) : "transparent"
 
                             MouseArea {
-                                id: searchResultMouse
+                                id: closeButton
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: searchWindow.hideSearch()
+                            }
+
+                            Widgets.MaterialIcon {
+                                anchors.centerIn: parent
+                                text: "close"
+                                color: Colours.m3error
+                                font.pointSize: Appearance.font.size.normal
+                            }
+                        }
+                    }
+
+                    // Search input field
+                    Rectangle {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 40
+                        radius: Appearance.rounding.normal
+                        color: Colours.alpha(Colours.m3onSurface, 0.04)
+                        border.color: searchInput.activeFocus ? Colours.m3primary : Colours.alpha(Colours.m3onSurface, 0.2)
+                        border.width: 1
+
+                        TextField {
+                            id: searchInput
+                            anchors.fill: parent
+                            anchors.margins: 1
+
+                            placeholderText: "Search applications, files, or run commands..."
+                            font.pointSize: Appearance.font.size.normal
+                            color: Colours.m3onSurface
+                            placeholderTextColor: Colours.m3onSurfaceVariant
+
+                            // Direct focus binding like end-4/dots-hyprland
+                            focus: searchWindow.visible
+                            activeFocusOnTab: true
+                            focusPolicy: Qt.StrongFocus
+
+                            background: Rectangle {
+                                color: "transparent"
+                                radius: Appearance.rounding.normal
+                            }
+
+                            leftPadding: 12
+                            rightPadding: 12
+
+                            // Handle keyboard input
+                            Keys.onPressed: function (event) {
+                                if (event.key === Qt.Key_Escape) {
+                                    searchWindow.hideSearch();
+                                    event.accepted = true;
+                                } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                                    if (searchWindow.searchResults.length > 0) {
+                                        searchWindow.executeResult(searchWindow.searchResults[searchList.currentIndex || 0]);
+                                    }
+                                    event.accepted = true;
+                                } else if (event.key === Qt.Key_Down) {
+                                    if (searchList.count > 0) {
+                                        searchList.currentIndex = Math.min(searchList.count - 1, (searchList.currentIndex || 0) + 1);
+                                    }
+                                    event.accepted = true;
+                                } else if (event.key === Qt.Key_Up) {
+                                    if (searchList.count > 0) {
+                                        searchList.currentIndex = Math.max(0, (searchList.currentIndex || 0) - 1);
+                                    }
+                                    event.accepted = true;
+                                }
+                            }
+
+                            // Search as user types
+                            onTextChanged: {
+                                searchWindow.searchText = text;
+                                searchTimer.restart();
+                            }
+                        }
+                    }
+                }
+
+                // Results list
+                ScrollView {
+                    id: scrollView
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    clip: true
+                    visible: searchWindow.searchResults.length > 0
+
+                    ListView {
+                        id: searchList
+                        model: searchWindow.searchResults
+                        spacing: 4
+                        currentIndex: -1
+
+                        // Highlight current item
+                        highlight: Rectangle {
+                            color: Colours.alpha(Colours.m3primary, 0.12)
+                            radius: Appearance.rounding.normal
+                        }
+
+                        delegate: Rectangle {
+                            id: resultDelegate
+                            width: searchList.width
+                            height: 56
+                            radius: Appearance.rounding.normal
+                            color: {
+                                if (searchList.currentIndex === index) {
+                                    return Colours.alpha(Colours.m3primary, 0.15);
+                                } else if (resultMouseArea.containsMouse) {
+                                    return Colours.alpha(Colours.m3primary, 0.08);
+                                } else {
+                                    return "transparent";
+                                }
+                            }
+
+                            required property var modelData
+                            required property int index
+                            property var resultData: modelData
+
+                            MouseArea {
+                                id: resultMouseArea
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
 
                                 onClicked: {
-                                    searchWindow.executeSearchResult(resultItem.modelData);
+                                    searchWindow.executeResult(resultDelegate.resultData);
+                                }
+
+                                onEntered: {
+                                    searchList.currentIndex = resultDelegate.index;
+                                }
+                            }
+
+                            RowLayout {
+                                anchors.fill: parent
+                                anchors.leftMargin: 16
+                                anchors.rightMargin: 16
+                                spacing: 16
+
+                                // Icon
+                                Loader {
+                                    Layout.preferredWidth: 24
+                                    Layout.preferredHeight: 24
+
+                                    sourceComponent: {
+                                        if (resultDelegate.resultData.type === "Application") {
+                                            return appIconComponent;
+                                        } else {
+                                            return materialIconComponent;
+                                        }
+                                    }
+
+                                    Component {
+                                        id: appIconComponent
+                                        IconImage {
+                                            source: Quickshell.iconPath(resultDelegate.resultData.icon || "application-x-executable")
+                                            width: 24
+                                            height: 24
+                                        }
+                                    }
+
+                                    Component {
+                                        id: materialIconComponent
+                                        Widgets.MaterialIcon {
+                                            text: {
+                                                if (resultDelegate.resultData.type === "Calculation")
+                                                    return "calculate";
+                                                if (resultDelegate.resultData.type === "Web Search")
+                                                    return "public";
+                                                return resultDelegate.resultData.icon || "apps";
+                                            }
+                                            color: Colours.m3primary
+                                            font.pointSize: Appearance.font.size.larger
+                                        }
+                                    }
+                                }
+
+                                // Content
+                                ColumnLayout {
+                                    Layout.fillWidth: true
+                                    spacing: 2
+
+                                    // Title
+                                    Widgets.StyledText {
+                                        text: resultDelegate.resultData.title || "Unknown"
+                                        font.pointSize: Appearance.font.size.normal
+                                        font.weight: Font.Medium
+                                        color: Colours.m3onSurface
+                                        Layout.fillWidth: true
+                                        elide: Text.ElideRight
+                                    }
+
+                                    // Description
+                                    Widgets.StyledText {
+                                        text: resultDelegate.resultData.description || ""
+                                        font.pointSize: Appearance.font.size.small
+                                        color: Colours.m3onSurfaceVariant
+                                        Layout.fillWidth: true
+                                        elide: Text.ElideRight
+                                        visible: text.length > 0
+                                    }
+                                }
+
+                                // Type indicator
+                                Widgets.StyledText {
+                                    text: resultDelegate.resultData.type || ""
+                                    font.pointSize: Appearance.font.size.small
+                                    color: Colours.m3outline
+                                    visible: text.length > 0
                                 }
                             }
                         }
                     }
+                }
 
-                    // Show placeholder when no results
-                    Text {
-                        width: parent.width
-                        visible: searchWindow.getSearchResults(searchInput.text).length === 0
-                        text: "No results found"
-                        font.family: Appearance.font.family.mono
-                        font.pointSize: Appearance.font.size.smaller
-                        color: Colours.semantic.borderStrong
-                        horizontalAlignment: Text.AlignHCenter
-                        topPadding: 20
-                    }
+                // No results message
+                Widgets.StyledText {
+                    text: searchWindow.searchText.length > 0 ? "No results found" : "Start typing to search..."
+                    font.pointSize: Appearance.font.size.normal
+                    color: Colours.m3onSurfaceVariant
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    visible: searchWindow.searchResults.length === 0
                 }
             }
         }
     }
 
-    // Search logic functions
-    function getSearchResults(query) {
-        if (!query || query.length === 0)
-            return [];
+    // Search timer to debounce search queries
+    Timer {
+        id: searchTimer
+        interval: 300
+        onTriggered: searchWindow.performSearch()
+    }
 
-        let results = [];
-
-        // Simple application search (placeholder)
-        const apps = [
-            {
-                name: "Calculator",
-                icon: "calculate",
-                type: "App",
-                exec: "gnome-calculator"
-            },
-            {
-                name: "Terminal",
-                icon: "terminal",
-                type: "App",
-                exec: "gnome-terminal"
-            },
-            {
-                name: "File Manager",
-                icon: "folder",
-                type: "App",
-                exec: "nautilus"
-            },
-            {
-                name: "Text Editor",
-                icon: "edit",
-                type: "App",
-                exec: "gnome-text-editor"
-            },
-            {
-                name: "Web Browser",
-                icon: "web",
-                type: "App",
-                exec: "firefox"
-            }
-        ];
-
-        // Filter apps by query
-        results = apps.filter(app => app.name.toLowerCase().includes(query.toLowerCase()));
-
-        // Add command execution if query looks like a command
-        if (query.includes(" ") || query.startsWith("/")) {
-            results.unshift({
-                name: `Run: ${query}`,
-                icon: "terminal",
-                type: "Command",
-                exec: query
-            });
+    // Functions
+    function performSearch() {
+        if (searchText.length === 0) {
+            searchResults = [];
+            return;
         }
 
-        // Add calculator result for mathematical expressions
-        if (/^[0-9+\-*/.() ]+$/.test(query)) {
+        var results = [];
+        var query = searchText.toLowerCase();
+
+        // Search applications using AppSearch service
+        var appResults = AppSearch.fuzzyQuery(searchText);
+        for (var i = 0; i < appResults.length; i++) {
+            results.push(appResults[i]);
+        }
+
+        // Math calculation - simplified regex check
+        var mathPattern = /^[\d+\-*/().\s]+$/;
+        if (searchText.trim().match(mathPattern)) {
             try {
-                const result = eval(query);
-                if (!isNaN(result)) {
+                var mathResult = eval(searchText.trim());
+                if (!isNaN(mathResult) && isFinite(mathResult)) {
                     results.unshift({
-                        name: `${query} = ${result}`,
+                        title: mathResult.toString(),
+                        description: "Math result for: " + searchText,
+                        type: "Calculation",
                         icon: "calculate",
-                        type: "Math",
-                        exec: `echo "${result}" | wl-copy`
+                        action: "copy",
+                        data: mathResult.toString()
                     });
                 }
             } catch (e)
-            // Ignore math errors
+            // Invalid math expression
             {}
         }
 
-        return results.slice(0, 8); // Limit to 8 results
-    }
+        // Web search
+        if (searchText.trim().length > 0) {
+            results.push({
+                title: "Search \"" + searchText + "\" on the web",
+                description: "Open web search in browser",
+                type: "Web Search",
+                icon: "public",
+                action: "web",
+                data: searchText
+            });
+        }
 
-    function executeSearch(query) {
-        const results = getSearchResults(query);
+        searchResults = results;
+
+        // Reset selection to first item
         if (results.length > 0) {
-            executeSearchResult(results[0]);
+            searchList.currentIndex = 0;
         }
     }
 
-    function executeSearchResult(result) {
-        DebugUtils.log("Executing:", result.name, "->", result.exec);
+    function executeResult(result) {
+        if (!result)
+            return;
 
-        if (result.type === "Command") {
-            Quickshell.execDetached(["bash", "-c", result.exec]);
-        } else if (result.type === "Math") {
-            Quickshell.execDetached(["bash", "-c", result.exec]);
-        } else {
-            // Launch application
-            Quickshell.execDetached([result.exec]);
+        DebugUtils.debug("Executing result:", result.title, "Action:", result.action);
+
+        switch (result.action) {
+        case "launch":
+            // Launch application using DesktopEntry.execute()
+            if (result.execute && typeof result.execute === "function") {
+                result.execute();
+            } else if (result.data && result.data.execute) {
+                result.data.execute();
+            } else if (typeof result.data === "string") {
+                // Fallback: execute as command
+                Quickshell.execDetached([result.data]);
+            }
+            break;
+        case "copy":
+            // Copy to clipboard
+            Quickshell.clipboardText = result.data;
+            break;
+        case "web":
+            // Open web search
+            Qt.openUrlExternally("https://www.google.com/search?q=" + encodeURIComponent(result.data));
+            break;
+        default:
+            DebugUtils.warn("Unknown action:", result.action);
         }
 
-        SearchManager.hideSearch();
+        // Hide search window after execution
+        searchWindow.hideSearch();
+    }
+
+    // Handle clicking outside to close
+    MouseArea {
+        anchors.fill: parent
+        z: -1
+        onClicked: searchWindow.hideSearch()
     }
 }
