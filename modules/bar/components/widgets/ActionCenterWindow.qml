@@ -7,6 +7,7 @@ import "../../../../services"
 import "../../../settings" as Settings
 import "../../../../utils"
 import "../../../../widgets" as Widgets
+import "../../../../config"
 
 PopupWindow {
     id: actionCenterWindow
@@ -18,8 +19,8 @@ PopupWindow {
 
     Rectangle {
         anchors.fill: parent
-        color: "#1c1b1f"
-        radius: 16
+        color: Colours.semantic.backgroundMain
+        radius: Appearance.rounding.large
         border.color: Qt.alpha("#938f99", 0.2)
         border.width: 1
 
@@ -73,10 +74,10 @@ PopupWindow {
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
                         text: "Action Center"
-                        font.family: "JetBrains Mono"
-                        font.pointSize: 16
+                        font.family: Appearance.font.family.display
+                        font.pointSize: Appearance.font.size.title
                         font.weight: Font.Medium
-                        color: "#e6e0e9"
+                        color: Colours.semantic.textPrimary
                     }
                 }
 
@@ -91,8 +92,8 @@ PopupWindow {
                 Rectangle {
                     width: parent.width
                     height: 120
-                    color: Qt.alpha("#d0bcff", 0.05)
-                    radius: 12
+                    color: Qt.alpha(Colours.semantic.accent, 0.05)
+                    radius: Appearance.rounding.larger
                     border.width: 1
                     border.color: Qt.alpha("#938f99", 0.1)
 
@@ -103,31 +104,31 @@ PopupWindow {
 
                         Text {
                             text: "Quick Settings"
-                            font.family: "JetBrains Mono"
-                            font.pointSize: 12
+                            font.family: Appearance.font.family.display
+                            font.pointSize: Appearance.font.size.body
                             font.weight: Font.Medium
-                            color: "#d0bcff"
+                            color: Colours.semantic.accent
                         }
 
                         Text {
                             text: "• WiFi controls"
-                            font.family: "JetBrains Mono"
-                            font.pointSize: 10
-                            color: "#938f99"
+                            font.family: Appearance.font.family.display
+                            font.pointSize: Appearance.font.size.smaller
+                            color: Colours.semantic.borderStrong
                         }
 
                         Text {
                             text: "• Volume mixer"
-                            font.family: "JetBrains Mono"
-                            font.pointSize: 10
-                            color: "#938f99"
+                            font.family: Appearance.font.family.display
+                            font.pointSize: Appearance.font.size.smaller
+                            color: Colours.semantic.borderStrong
                         }
 
                         Text {
                             text: "• Bluetooth settings"
-                            font.family: "JetBrains Mono"
-                            font.pointSize: 10
-                            color: "#938f99"
+                            font.family: Appearance.font.family.display
+                            font.pointSize: Appearance.font.size.smaller
+                            color: Colours.semantic.borderStrong
                         }
                     }
                 }
@@ -137,7 +138,7 @@ PopupWindow {
                     width: parent.width
                     height: 50
                     color: Qt.alpha("#938f99", 0.05)
-                    radius: 12
+                    radius: Appearance.rounding.larger
                     border.width: 1
                     border.color: Qt.alpha("#938f99", 0.1)
 
@@ -147,17 +148,17 @@ PopupWindow {
 
                         Widgets.MaterialIcon {
                             text: "settings"
-                            font.pointSize: 18
-                            color: "#e6e0e9"
+                            font.pointSize: Appearance.font.size.iconMedium
+                            color: Colours.semantic.textPrimary
                             anchors.verticalCenter: parent.verticalCenter
                         }
 
                         Text {
                             text: "Settings"
-                            font.family: "JetBrains Mono"
-                            font.pointSize: 12
+                            font.family: Appearance.font.family.display
+                            font.pointSize: Appearance.font.size.body
                             font.weight: Font.Medium
-                            color: "#e6e0e9"
+                            color: Colours.semantic.textPrimary
                             anchors.verticalCenter: parent.verticalCenter
                         }
                     }
@@ -188,7 +189,7 @@ PopupWindow {
                     width: parent.width
                     height: 160
                     color: Qt.alpha("#938f99", 0.05)
-                    radius: 12
+                    radius: Appearance.rounding.larger
                     border.width: 1
                     border.color: Qt.alpha("#938f99", 0.1)
 
@@ -199,17 +200,17 @@ PopupWindow {
 
                         Text {
                             text: "Notifications"
-                            font.family: "JetBrains Mono"
-                            font.pointSize: 12
+                            font.family: Appearance.font.family.display
+                            font.pointSize: Appearance.font.size.body
                             font.weight: Font.Medium
-                            color: "#d0bcff"
+                            color: Colours.semantic.accent
                         }
 
                         Text {
                             text: "No new notifications"
-                            font.family: "JetBrains Mono"
-                            font.pointSize: 10
-                            color: "#938f99"
+                            font.family: Appearance.font.family.display
+                            font.pointSize: Appearance.font.size.smaller
+                            color: Colours.semantic.borderStrong
                             opacity: 0.7
                         }
                     }
@@ -219,8 +220,8 @@ PopupWindow {
                 Rectangle {
                     width: parent.width
                     height: 80
-                    color: Qt.alpha("#d0bcff", 0.03)
-                    radius: 12
+                    color: Qt.alpha(Colours.semantic.accent, 0.03)
+                    radius: Appearance.rounding.larger
                     border.width: 1
                     border.color: Qt.alpha("#938f99", 0.1)
 
@@ -231,17 +232,17 @@ PopupWindow {
                         Rectangle {
                             width: 60
                             height: 40
-                            radius: 8
-                            color: mouseArea1.containsMouse ? Qt.alpha("#d0bcff", 0.12) : Qt.alpha("#d0bcff", 0.08)
+                            radius: Appearance.rounding.normal
+                            color: mouseArea1.containsMouse ? Qt.alpha(Colours.semantic.accent, 0.12) : Qt.alpha(Colours.semantic.accent, 0.08)
                             border.width: 1
-                            border.color: Qt.alpha("#d0bcff", 0.2)
+                            border.color: Qt.alpha(Colours.semantic.accent, 0.2)
 
                             Text {
                                 anchors.centerIn: parent
                                 text: "Settings"
-                                font.family: "JetBrains Mono"
-                                font.pointSize: 9
-                                color: "#d0bcff"
+                                font.family: Appearance.font.family.display
+                                font.pointSize: Appearance.font.size.small
+                                color: Colours.semantic.accent
                             }
 
                             MouseArea {
@@ -258,17 +259,17 @@ PopupWindow {
                         Rectangle {
                             width: 60
                             height: 40
-                            radius: 8
-                            color: mouseArea2.containsMouse ? Qt.alpha("#d0bcff", 0.12) : Qt.alpha("#d0bcff", 0.08)
+                            radius: Appearance.rounding.normal
+                            color: mouseArea2.containsMouse ? Qt.alpha(Colours.semantic.accent, 0.12) : Qt.alpha(Colours.semantic.accent, 0.08)
                             border.width: 1
-                            border.color: Qt.alpha("#d0bcff", 0.2)
+                            border.color: Qt.alpha(Colours.semantic.accent, 0.2)
 
                             Text {
                                 anchors.centerIn: parent
                                 text: "Power"
-                                font.family: "JetBrains Mono"
-                                font.pointSize: 9
-                                color: "#d0bcff"
+                                font.family: Appearance.font.family.display
+                                font.pointSize: Appearance.font.size.small
+                                color: Colours.semantic.accent
                             }
 
                             MouseArea {

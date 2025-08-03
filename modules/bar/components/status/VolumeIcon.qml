@@ -2,12 +2,13 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell.Services.Pipewire
 import "../../../../widgets" as Widgets
+import "../../../../config"
 
 Rectangle {
     width: 36
     height: 36
-    radius: 12
-    color: volumeHover.containsMouse ? Qt.alpha("#d0bcff", 0.12) : "transparent"
+    radius: Appearance.rounding.larger
+    color: volumeHover.containsMouse ? Colours.alpha(Colours.m3primary, 0.12) : "transparent"
 
     readonly property PwNode sink: Pipewire.defaultAudioSink
     readonly property bool muted: sink?.audio?.muted ?? false
@@ -38,8 +39,8 @@ Rectangle {
         animate: true
 
         text: parent.muted ? "volume_off" : parent.volume >= 0.66 ? "volume_up" : parent.volume >= 0.33 ? "volume_down" : "volume_mute"
-        color: parent.muted ? "#f2b8b5" : "#e6e0e9"
-        font.pointSize: 18
+        color: parent.muted ? Colours.m3error : Colours.m3onSurface
+        font.pointSize: Appearance.font.size.iconMedium
         fill: volumeHover.containsMouse ? 1 : 0
     }
 

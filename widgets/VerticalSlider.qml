@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import "../config"
 
 Item {
     id: root
@@ -28,13 +29,16 @@ Item {
         background: Rectangle {
             anchors.fill: parent
 
-            color: "#4d4d4d"
-            radius: 15
+            color: Colours.semantic.sliderTrack
+            radius: Appearance.rounding.large
 
             Rectangle {
-                anchors.fill: parent
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: parent.height * root.value
 
-                color: "#666666"
+                color: Colours.semantic.sliderActiveTrack
                 radius: parent.radius
             }
         }
@@ -45,13 +49,21 @@ Item {
             property bool moving: slider.pressed
 
             x: slider.leftPadding + (slider.horizontal ? slider.visualPosition * slider.availableWidth : (slider.availableWidth - width) / 2)
-            y: slider.topPadding + (slider.horizontal ? (slider.availableHeight - height) / 2 : slider.visualPosition * slider.availableHeight)
+            y: slider.topPadding + (slider.horizontal ? (slider.availableHeight - height) / 2 : (1 - slider.visualPosition) * (slider.availableHeight - height))
 
-            implicitWidth: slider.implicitHeight / 4.5
-            implicitHeight: slider.implicitHeight
+            implicitWidth: 26
+            implicitHeight: 26
 
-            color: "#ffffff"
+            color: handle.moving ? Colours.semantic.sliderHandleActive : Colours.semantic.sliderHandle
             radius: width / 2
+            border.color: Colours.semantic.sliderBorder
+            border.width: 1
+
+            Behavior on color {
+                ColorAnimation {
+                    duration: 150
+                }
+            }
 
             Text {
                 id: iconText
@@ -60,15 +72,15 @@ Item {
 
                 function update(): void {
                     text = moving ? Math.round(root.value * 100) : root.icon;
-                    font.pointSize = moving ? 8 : 12;
-                    font.family = moving ? "sans-serif" : "Material Icons";
+                    font.pointSize = moving ? Appearance.font.size.tiny : Appearance.font.size.body;
+                    font.family = moving ? Appearance.font.family.sans : Appearance.font.family.materialIcons;
                 }
 
                 anchors.centerIn: parent
                 text: root.icon
-                color: "#333333"
-                font.pointSize: 12
-                font.family: "Material Icons"
+                color: Colours.semantic.sliderBorder
+                font.pointSize: Appearance.font.size.body
+                font.family: Appearance.font.family.materialIcons
 
                 Behavior on text {
                     SequentialAnimation {

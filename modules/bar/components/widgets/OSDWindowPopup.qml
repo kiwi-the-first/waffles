@@ -1,101 +1,210 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Effects
 import Quickshell
+import Quickshell.Hyprland
 import "../../../../widgets"
 import "../../../../services"
+import "../../../../config"
 
 PopupWindow {
     id: osdWindow
 
-    implicitWidth: 80
-    implicitHeight: 320
+    implicitWidth: 240  // 25% smaller (320 * 0.75)
+    implicitHeight: 66
     visible: false
     color: "transparent"
 
     Rectangle {
         id: content
-
         anchors.fill: parent
-        color: "#1c1b1f"
-        radius: 16
-        border.color: Qt.alpha("#938f99", 0.2)
-        border.width: 1
+        color: Colours.semantic.backgroundElevated  // Material Design 3 Surface Container High
+        radius: 33  // Pill shape (half of height: 66/2)
+        // border removed for cleaner look
 
-        Column {
-            anchors.centerIn: parent
-            spacing: 15
+        scale: osdWindow.visible ? 1.0 : 0.95
+        opacity: osdWindow.visible ? 1.0 : 0.0
 
-            MouseArea {
-                implicitWidth: 30
-                implicitHeight: 150
-                hoverEnabled: true
+        Behavior on scale {
+            NumberAnimation {
+                duration: Appearance.anim.durations.small
+                easing.type: Easing.OutBack
+                easing.overshoot: 1.2
+            }
+        }
 
-                onEntered: OSDManager.hovered = true
-                onExited: OSDManager.hovered = false
+        Behavior on opacity {
+            NumberAnimation {
+                duration: Appearance.anim.durations.small
+                easing.type: Easing.OutCubic
+            }
+        }
 
-                onWheel: wheel => {
-                    if (wheel.angleDelta.y > 0)
-                        Audio.setVolume(Audio.volume + 0.05);
-                    else if (wheel.angleDelta.y < 0)
-                        Audio.setVolume(Audio.volume - 0.05);
-                }
+        // Simple shadow effect using a background rectangle
+        Rectangle {
+            anchors.fill: parent
+            anchors.margins: -2
+            color: "transparent"
+            radius: parent.radius + 2
+            border.color: Qt.alpha("#000000", 0.1)
+            border.width: 2
+            z: -1
+        }
 
-                VerticalSlider {
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            onEntered: OSDManager.hovered = true
+            onExited: OSDManager.hovered = false
+        }
+
+        RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: Appearance.padding.large
+            anchors.topMargin: Appearance.padding.large
+            anchors.bottomMargin: Appearance.padding.large
+            anchors.rightMargin: Appearance.padding.large + 8  // Extra padding on the right
+            spacing: Appearance.spacing.normal
+
+            // Volume indicator (shown when volume changes)
+            Item {
+                id: volumeIndicator
+                visible: OSDManager.osdVisible && OSDManager.currentType === "volume"
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+
+                RowLayout {
                     anchors.fill: parent
+                    spacing: Appearance.spacing.normal
 
-                    icon: {
-                        if (Audio.muted)
-                            return "🔇";
-                        if (value >= 0.5)
-                            return "🔊";
-                        if (value > 0)
-                            return "🔉";
-                        return "🔈";
+                    // Volume icon using Material Design icons
+                    MaterialIcon {
+                        Layout.alignment: Qt.AlignVCenter
+                        text: {
+                            if (Audio.muted)
+                                return "volume_off";
+                            if (Audio.volume >= 0.7)
+                                return "volume_up";
+                            if (Audio.volume > 0.3)
+                                return "volume_down";
+                            return "volume_mute";
+                        }
+                        font.pointSize: Appearance.font.size.iconXLarge
+                        color: Colours.semantic.textPrimary  // Material Design 3 On Surface
+                        fill: 1.0
                     }
-                    value: Audio.volume
-                    onMoved: Audio.setVolume(value)
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: Appearance.spacing.small
+
+                        RowLayout {
+                            Layout.fillWidth: true
+
+                            StyledText {
+                                text: "Volume"
+                                font.pointSize: Appearance.font.size.normal
+                                color: Colours.semantic.textPrimary  // Material Design 3 On Surface
+                                Layout.fillWidth: true
+                            }
+
+                            StyledText {
+                                text: Math.round(Audio.volume * 100)
+                                font.pointSize: Appearance.font.size.normal
+                                font.weight: Font.Medium
+                                color: Colours.semantic.textPrimary  // Material Design 3 On Surface
+                            }
+                        }
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            implicitHeight: 4
+                            radius: Appearance.rounding.tiny
+                            color: Colours.semantic.backgroundSurface  // Material Design 3 Surface Variant
+
+                            Rectangle {
+                                anchors.left: parent.left
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: parent.width * Audio.volume
+                                height: parent.height
+                                radius: parent.radius
+                                color: Colours.semantic.accent  // Material Design 3 Primary
+
+                                Behavior on width {
+                                    NumberAnimation {
+                                        duration: Appearance.anim.durations.normal
+                                        easing.type: Easing.OutCubic
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
-            MouseArea {
-                implicitWidth: 30
-                implicitHeight: 150
-                hoverEnabled: true
+            // Brightness indicator (shown when brightness changes)
+            Item {
+                id: brightnessIndicator
+                visible: OSDManager.osdVisible && OSDManager.currentType === "brightness"
+                Layout.fillWidth: true
+                Layout.fillHeight: true
 
-                onEntered: OSDManager.hovered = true
-                onExited: OSDManager.hovered = false
-
-                onWheel: wheel => {
-                    try {
-                        if (wheel.angleDelta.y > 0)
-                            Brightness.increaseBrightness();
-                        else if (wheel.angleDelta.y < 0)
-                            Brightness.decreaseBrightness();
-                    } catch (e) {
-                        console.log("Brightness control error:", e);
-                    }
-                }
-
-                VerticalSlider {
+                RowLayout {
                     anchors.fill: parent
+                    spacing: Appearance.spacing.normal
 
-                    icon: "☀"
-                    value: 0.5  // Default brightness value
-                    onMoved: {
-                        try {
-                            // Use the brightness service functions instead of direct monitor access
-                            const diff = value - 0.5;
-                            if (diff > 0) {
-                                for (let i = 0; i < Math.abs(diff) * 10; i++) {
-                                    Brightness.increaseBrightness();
-                                }
-                            } else if (diff < 0) {
-                                for (let i = 0; i < Math.abs(diff) * 10; i++) {
-                                    Brightness.decreaseBrightness();
+                    // Brightness icon using Material Design icons
+                    MaterialIcon {
+                        Layout.alignment: Qt.AlignVCenter
+                        text: "light_mode"
+                        font.pointSize: Appearance.font.size.iconXLarge
+                        color: Colours.semantic.textPrimary  // Material Design 3 On Surface
+                        fill: 1.0
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: Appearance.spacing.small
+
+                        RowLayout {
+                            Layout.fillWidth: true
+
+                            StyledText {
+                                text: "Brightness"
+                                font.pointSize: Appearance.font.size.normal
+                                color: Colours.semantic.textPrimary  // Material Design 3 On Surface
+                                Layout.fillWidth: true
+                            }
+
+                            StyledText {
+                                text: Brightness.monitors[0] ? Math.round(Brightness.monitors[0].brightness * 100) : "50"
+                                font.pointSize: Appearance.font.size.normal
+                                font.weight: Font.Medium
+                                color: Colours.semantic.textPrimary  // Material Design 3 On Surface
+                            }
+                        }
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            implicitHeight: 4
+                            radius: Appearance.rounding.tiny
+                            color: Colours.semantic.backgroundSurface  // Material Design 3 Surface Variant
+
+                            Rectangle {
+                                anchors.left: parent.left
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: parent.width * (Brightness.monitors[0] ? Brightness.monitors[0].brightness : 0.5)
+                                height: parent.height
+                                radius: parent.radius
+                                color: Colours.m3tertiary  // Material Design 3 Tertiary
+
+                                Behavior on width {
+                                    NumberAnimation {
+                                        duration: Appearance.anim.durations.normal
+                                        easing.type: Easing.OutCubic
+                                    }
                                 }
                             }
-                        } catch (e) {
-                            console.log("Brightness set error:", e);
                         }
                     }
                 }

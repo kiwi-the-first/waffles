@@ -2,15 +2,16 @@ import QtQuick
 import QtQuick.Controls
 import "../common"
 import "../../widgets" as Widgets
+import "../../config"
 
 Rectangle {
     id: settingsPanel
     width: parent.width
     height: 120
-    radius: 12
-    color: Qt.alpha("#938f99", 0.05)
+    radius: Appearance.rounding.larger
+    color: Colours.alpha(Colours.m3outline, 0.05)
     border.width: 1
-    border.color: Qt.alpha("#938f99", 0.1)
+    border.color: Colours.alpha(Colours.m3outline, 0.1)
 
     Column {
         anchors.fill: parent
@@ -19,10 +20,10 @@ Rectangle {
 
         Text {
             text: "Interaction Mode"
-            font.family: "JetBrains Mono"
-            font.pointSize: 12
+            font.family: Appearance.font.family.display
+            font.pointSize: Appearance.font.size.body
             font.weight: Font.Medium
-            color: "#e6e0e9"
+            color: Colours.semantic.textPrimary
         }
 
         Row {
@@ -31,17 +32,17 @@ Rectangle {
             Rectangle {
                 width: 100
                 height: 32
-                radius: 8
-                color: InteractionSettings.hoverMode ? "#d0bcff" : Qt.alpha("#938f99", 0.1)
+                radius: Appearance.rounding.normal
+                color: InteractionSettings.hoverMode ? Colours.m3primary : Colours.alpha(Colours.m3outline, 0.1)
                 border.width: 1
-                border.color: InteractionSettings.hoverMode ? "#d0bcff" : Qt.alpha("#938f99", 0.2)
+                border.color: InteractionSettings.hoverMode ? Colours.m3primary : Colours.alpha(Colours.m3outline, 0.2)
 
                 Text {
                     anchors.centerIn: parent
                     text: "Hover"
-                    font.family: "JetBrains Mono"
-                    font.pointSize: 10
-                    color: InteractionSettings.hoverMode ? "#1c1b1f" : "#e6e0e9"
+                    font.family: Appearance.font.family.display
+                    font.pointSize: Appearance.font.size.smaller
+                    color: InteractionSettings.hoverMode ? Colours.m3surface : Colours.m3onSurface
                 }
 
                 MouseArea {
@@ -56,17 +57,17 @@ Rectangle {
             Rectangle {
                 width: 100
                 height: 32
-                radius: 8
-                color: !InteractionSettings.hoverMode ? "#d0bcff" : Qt.alpha("#938f99", 0.1)
+                radius: Appearance.rounding.normal
+                color: !InteractionSettings.hoverMode ? Colours.m3primary : Colours.alpha(Colours.m3outline, 0.1)
                 border.width: 1
-                border.color: !InteractionSettings.hoverMode ? "#d0bcff" : Qt.alpha("#938f99", 0.2)
+                border.color: !InteractionSettings.hoverMode ? Colours.m3primary : Colours.alpha(Colours.m3outline, 0.2)
 
                 Text {
                     anchors.centerIn: parent
                     text: "Click"
-                    font.family: "JetBrains Mono"
-                    font.pointSize: 10
-                    color: !InteractionSettings.hoverMode ? "#1c1b1f" : "#e6e0e9"
+                    font.family: Appearance.font.family.display
+                    font.pointSize: Appearance.font.size.smaller
+                    color: !InteractionSettings.hoverMode ? Colours.m3surface : Colours.m3onSurface
                 }
 
                 MouseArea {
@@ -81,9 +82,9 @@ Rectangle {
 
         Text {
             text: InteractionSettings.hoverMode ? "Widgets open on mouse hover" : "Widgets open on mouse click"
-            font.family: "JetBrains Mono"
-            font.pointSize: 9
-            color: Qt.alpha("#938f99", 0.8)
+            font.family: Appearance.font.family.display
+            font.pointSize: Appearance.font.size.small
+            color: Colours.alpha(Colours.m3outline, 0.8)
         }
     }
 }

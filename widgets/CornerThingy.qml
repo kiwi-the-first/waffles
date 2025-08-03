@@ -5,6 +5,7 @@
 
 import QtQuick
 import QtQuick.Shapes
+import "../config"
 
 Item {
     id: root
@@ -14,7 +15,7 @@ Item {
     property int cornerHeight: 30
     property int cornerWidth: cornerHeight // default is square, but you can set a separate width
 
-    property color color: "#000000"
+    property color color: Colours.alpha(Colours.m3shadow, 0.3)
     property var corners: [0] // 0 is top right, 1 is top left, 2 is bottom left, 3 is bottom right
 
     Repeater {

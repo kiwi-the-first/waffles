@@ -10,6 +10,7 @@ Singleton {
     property bool osdVisible: false
     property real hideDelay: 2000
     property bool hovered: false
+    property string currentType: "volume" // "volume" or "brightness"
 
     readonly property Timer hideTimer: Timer {
         interval: root.hideDelay
@@ -21,6 +22,20 @@ Singleton {
 
     function show(): void {
         DebugUtils.log("OSDManager: Showing OSD");
+        root.osdVisible = true;
+        hideTimer.restart();
+    }
+
+    function showVolume(): void {
+        DebugUtils.log("OSDManager: Showing Volume OSD");
+        root.currentType = "volume";
+        root.osdVisible = true;
+        hideTimer.restart();
+    }
+
+    function showBrightness(): void {
+        DebugUtils.log("OSDManager: Showing Brightness OSD");
+        root.currentType = "brightness";
         root.osdVisible = true;
         hideTimer.restart();
     }
@@ -37,12 +52,15 @@ Singleton {
 
         function onMutedChanged(): void {
             DebugUtils.log("OSDManager: Audio muted changed to", Audio.muted);
-            root.show();
+            root.showVolume();
         }
 
         function onVolumeChanged(): void {
             DebugUtils.log("OSDManager: Audio volume changed to", Audio.volume);
-            root.show();
+            root.showVolume();
         }
     }
+
+    // Monitor brightness changes via the increase/decrease functions
+    // Since we don't have direct brightness property access, we'll rely on IPC calls to trigger OSD
 }

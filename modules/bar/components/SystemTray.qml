@@ -7,6 +7,7 @@ import Quickshell.Services.SystemTray
 import Quickshell.Widgets
 import "../../../utils"
 import "../../common"
+import "../../../config"
 
 Column {
     id: root
@@ -92,10 +93,10 @@ Column {
 
         Rectangle {
             anchors.fill: parent
-            color: "#2d2d30"
-            border.color: Qt.alpha("#938f99", 0.3)
+            color: Colours.m3surfaceContainerHigh
+            border.color: Colours.alpha(Colours.m3outline, 0.3)
             border.width: 1
-            radius: 8
+            radius: Appearance.rounding.normal
         }
 
         ListView {
@@ -118,20 +119,20 @@ Column {
                 width: menuListView.width
                 height: (menuEntry.modelData?.isSeparator) ? 8 : 32
                 color: "transparent"
-                radius: 6
+                radius: Appearance.rounding.smaller
 
                 Rectangle {
                     anchors.centerIn: parent
                     width: parent.width - 8
                     height: 1
-                    color: Qt.alpha("#938f99", 0.4)
+                    color: Colours.alpha(Colours.m3outline, 0.4)
                     visible: menuEntry.modelData?.isSeparator ?? false
                 }
 
                 Rectangle {
                     anchors.fill: parent
-                    color: menuMouseArea.containsMouse ? Qt.alpha("#938f99", 0.2) : "transparent"
-                    radius: 6
+                    color: menuMouseArea.containsMouse ? Colours.alpha(Colours.m3outline, 0.2) : "transparent"
+                    radius: Appearance.rounding.smaller
                     visible: !(menuEntry.modelData?.isSeparator ?? false)
 
                     Row {
@@ -143,10 +144,10 @@ Column {
                         Text {
                             anchors.verticalCenter: parent.verticalCenter
                             width: parent.width - 20
-                            color: (menuEntry.modelData?.enabled ?? true) ? "#e6e0e9" : "#6c6c6c"
+                            color: (menuEntry.modelData?.enabled ?? true) ? Colours.m3onSurface : Colours.m3onSurfaceVariant
                             text: menuEntry.modelData?.text ?? ""
-                            font.family: "JetBrains Mono"
-                            font.pointSize: 9
+                            font.family: Appearance.font.family.display
+                            font.pointSize: Appearance.font.size.small
                             elide: Text.ElideRight
                         }
 
@@ -210,13 +211,13 @@ Column {
     Rectangle {
         width: 44
         height: repeater.count > 0 ? (repeater.count * 32 + (repeater.count - 1) * 8 + 16) : 0
-        radius: 17
+        radius: Appearance.rounding.large
         anchors.horizontalCenter: parent.horizontalCenter
         visible: repeater.count > 0
 
-        color: Qt.alpha("#d0bcff", 0.05)
+        color: Colours.alpha(Colours.m3primary, 0.05)
         border.width: 1
-        border.color: Qt.alpha("#938f99", 0.08)
+        border.color: Colours.alpha(Colours.m3outline, 0.08)
 
         // Subtle background gradient
         Rectangle {
@@ -225,7 +226,7 @@ Column {
             gradient: Gradient {
                 GradientStop {
                     position: 0.0
-                    color: Qt.alpha("#d0bcff", 0.02)
+                    color: Colours.alpha(Colours.m3primary, 0.02)
                 }
                 GradientStop {
                     position: 1.0
@@ -247,8 +248,8 @@ Column {
 
                     width: 32
                     height: 32
-                    radius: 8
-                    color: mouseArea.containsMouse ? Qt.alpha("#938f99", 0.2) : "transparent"
+                    radius: Appearance.rounding.normal
+                    color: mouseArea.containsMouse ? Colours.alpha(Colours.m3outline, 0.2) : "transparent"
                     // Remove individual borders
                     border.width: 0
 
@@ -278,15 +279,15 @@ Column {
                         Rectangle {
                             anchors.fill: parent
                             visible: trayIcon.status === Image.Error || !trayIcon.source
-                            color: Qt.alpha("#938f99", 0.3)
-                            radius: 4
+                            color: Colours.alpha(Colours.m3outline, 0.3)
+                            radius: Appearance.rounding.small
 
                             Text {
                                 anchors.centerIn: parent
                                 text: "?"
-                                font.family: "JetBrains Mono"
-                                font.pointSize: 10
-                                color: "#e6e0e9"
+                                font.family: Appearance.font.family.display
+                                font.pointSize: Appearance.font.size.smaller
+                                color: Colours.semantic.textPrimary
                             }
                         }
                     }
@@ -401,19 +402,19 @@ Column {
                         anchors.bottomMargin: 8
                         width: tooltipText.width + 16
                         height: tooltipText.height + 8
-                        color: "#1c1b1f"
-                        border.color: Qt.alpha("#938f99", 0.3)
+                        color: Colours.semantic.backgroundMain
+                        border.color: Colours.alpha(Colours.m3outline, 0.3)
                         border.width: 1
-                        radius: 6
+                        radius: Appearance.rounding.smaller
                         z: 100
 
                         Text {
                             id: tooltipText
                             anchors.centerIn: parent
                             text: parent.item.title || ""
-                            font.family: "JetBrains Mono"
-                            font.pointSize: 9
-                            color: "#e6e0e9"
+                            font.family: Appearance.font.family.display
+                            font.pointSize: Appearance.font.size.small
+                            color: Colours.semantic.textPrimary
                         }
                     }
 

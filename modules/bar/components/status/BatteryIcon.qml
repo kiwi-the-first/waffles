@@ -2,13 +2,14 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell.Services.UPower
 import "../../../../widgets" as Widgets
+import "../../../../config"
 
 Rectangle {
     id: batteryRect
     width: 36
     height: 36
-    radius: 12
-    color: batteryHover.containsMouse ? Qt.alpha("#d0bcff", 0.12) : "transparent"
+    radius: Appearance.rounding.larger
+    color: batteryHover.containsMouse ? Colours.alpha(Colours.m3primary, 0.12) : "transparent"
 
     property var battery: UPower.displayDevice
     property bool isCharging: !UPower.onBattery
@@ -34,8 +35,8 @@ Rectangle {
         anchors.centerIn: parent
         animate: true
 
-        color: parent.isLowBattery ? "#f2b8b5" : parent.isCharging ? "#a6d4a9" : "#e6e0e9"
-        font.pointSize: 18
+        color: parent.isLowBattery ? Colours.m3error : parent.isCharging ? Colours.m3primary : Colours.m3onSurface
+        font.pointSize: Appearance.font.size.iconMedium
         fill: batteryHover.containsMouse ? 1 : 0
 
         text: {

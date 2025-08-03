@@ -2,6 +2,7 @@ import Quickshell
 import QtQuick
 import "../../../widgets" as Widgets
 import "../../../services" as Root
+import "../../../config"
 
 Rectangle {
     id: root
@@ -11,9 +12,9 @@ Rectangle {
 
     implicitWidth: 44
     implicitHeight: content.implicitHeight + 16
-    radius: 17
+    radius: Appearance.rounding.large
 
-    color: hoverArea.containsMouse ? Qt.alpha("#d0bcff", 0.08) : "transparent"
+    color: hoverArea.containsMouse ? Qt.alpha(Colours.semantic.accent, 0.08) : "transparent"
 
     Behavior on color {
         ColorAnimation {
@@ -75,8 +76,8 @@ Rectangle {
             animate: true
 
             text: "calendar_month"
-            color: "#e6e0e9"
-            font.pointSize: 15
+            color: Colours.semantic.textPrimary
+            font.pointSize: Appearance.font.size.larger
             fill: hoverArea.containsMouse ? 1 : 0
             grade: hoverArea.containsMouse ? 0 : -25
 
@@ -97,9 +98,9 @@ Rectangle {
 
             horizontalAlignment: Text.AlignHCenter
             text: Qt.formatDateTime(systemClock.date, "HH\nmm")
-            color: "#cac4d0"
-            font.pointSize: 13
-            font.family: "JetBrains Mono"
+            color: Colours.semantic.textSecondary
+            font.pointSize: Appearance.font.size.medium
+            font.family: Appearance.font.family.display
             font.weight: 500
 
             opacity: hoverArea.containsMouse ? 1.0 : 0.8

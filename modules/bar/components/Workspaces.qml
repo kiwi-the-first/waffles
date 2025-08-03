@@ -5,18 +5,19 @@ import Quickshell.Hyprland
 import "../../../services"
 import "../../../widgets" as Widgets
 import "../../common"
+import "../../../config"
 
 Rectangle {
     id: root
     width: 36
     height: 36
-    radius: 18
+    radius: Appearance.rounding.large
 
     property int currentWorkspace: Hyprland.focusedMonitor?.activeWorkspace?.id ?? 1
 
-    color: Qt.alpha("#d0bcff", 0.1)
+    color: Colours.alpha(Colours.m3primary, 0.1)
     border.width: 1
-    border.color: Qt.alpha("#938f99", 0.2)
+    border.color: Colours.alpha(Colours.m3outline, 0.2)
 
     Behavior on color {
         ColorAnimation {
@@ -41,7 +42,7 @@ Rectangle {
         }
 
         onEntered: {
-            parent.color = Qt.alpha("#d0bcff", 0.15);
+            parent.color = Colours.alpha(Colours.m3primary, 0.15);
             if (InteractionSettings.hoverMode) {
                 WorkspaceManager.stopHideTimer(); // Cancel any pending hide
                 WorkspaceManager.showWorkspaceWindow();
@@ -49,7 +50,7 @@ Rectangle {
         }
 
         onExited: {
-            parent.color = Qt.alpha("#d0bcff", 0.1);
+            parent.color = Colours.alpha(Colours.m3primary, 0.1);
             if (InteractionSettings.hoverMode) {
                 WorkspaceManager.startHideTimer(); // Start delay before hiding
             }
@@ -59,10 +60,10 @@ Rectangle {
     Text {
         anchors.centerIn: parent
         text: root.currentWorkspace.toString()
-        font.family: "JetBrains Mono"
-        font.pointSize: 12
+        font.family: Appearance.font.family.display
+        font.pointSize: Appearance.font.size.body
         font.weight: Font.Medium
-        color: "#d0bcff"
+        color: Colours.semantic.accent
 
         Behavior on opacity {
             NumberAnimation {

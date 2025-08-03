@@ -3,13 +3,14 @@ import QtQuick
 import Quickshell.Io
 import "../../../../widgets" as Widgets
 import "../../../../utils"
+import "../../../../config"
 
 Rectangle {
     id: networkRect
     width: 36
     height: 36
-    radius: 12
-    color: networkHover.containsMouse ? Qt.alpha("#d0bcff", 0.12) : "transparent"
+    radius: Appearance.rounding.larger
+    color: networkHover.containsMouse ? Colours.alpha(Colours.m3primary, 0.12) : "transparent"
 
     property string connectionStatus: "disconnected"
     property string ssid: ""
@@ -109,8 +110,8 @@ Rectangle {
                 return "network_wifi_2_bar";
             return "network_wifi_1_bar";
         }
-        color: parent.isConnected ? "#e6e0e9" : "#f2b8b5"
-        font.pointSize: 15
+        color: parent.isConnected ? Colours.m3onSurface : Colours.m3error
+        font.pointSize: Appearance.font.size.larger
         fill: networkHover.containsMouse ? 1 : 0
     }
 

@@ -7,6 +7,7 @@ import "../../../../services"
 import "../../../settings" as Settings
 import "../../../../utils"
 import "../../../../widgets" as Widgets
+import "../../../../config"
 
 PopupWindow {
     id: settingsWindow
@@ -18,9 +19,9 @@ PopupWindow {
 
     Rectangle {
         anchors.fill: parent
-        color: "#1c1b1f"
-        radius: 16
-        border.color: Qt.alpha("#938f99", 0.2)
+        color: Colours.m3surface
+        radius: Appearance.rounding.large
+        border.color: Colours.alpha(Colours.m3outline, 0.2)
         border.width: 1
 
         // HoverHandler to detect hover and prevent closing
@@ -40,16 +41,16 @@ PopupWindow {
             anchors.rightMargin: 12
             width: 28
             height: 28
-            radius: 14
-            color: Qt.alpha("#938f99", 0.1)
+            radius: Appearance.rounding.large
+            color: Colours.alpha(Colours.m3outline, 0.1)
             border.width: 1
-            border.color: Qt.alpha("#938f99", 0.2)
+            border.color: Colours.alpha(Colours.m3outline, 0.2)
 
             Widgets.MaterialIcon {
                 anchors.centerIn: parent
                 text: "close"
-                font.pointSize: 16
-                color: "#e6e0e9"
+                font.pointSize: Appearance.font.size.title
+                color: Colours.m3onSurface
             }
 
             MouseArea {
@@ -61,7 +62,7 @@ PopupWindow {
                     SettingsManager.hideSettingsWindow();
                 }
                 onContainsMouseChanged: {
-                    parent.color = closeButtonMouseArea.containsMouse ? Qt.alpha("#938f99", 0.2) : Qt.alpha("#938f99", 0.1);
+                    parent.color = closeButtonMouseArea.containsMouse ? Colours.alpha(Colours.m3outline, 0.2) : Colours.alpha(Colours.m3outline, 0.1);
                 }
             }
 
@@ -87,14 +88,16 @@ PopupWindow {
                 // Title
                 Text {
                     text: "Settings"
-                    font.family: "JetBrains Mono"
-                    font.pointSize: 16
+                    font.family: Appearance.font.family.display
+                    font.pointSize: Appearance.font.size.title
                     font.weight: Font.Bold
-                    color: "#e6e0e9"
+                    color: Colours.m3onSurface
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
 
                 // Settings panels
+                Settings.ThemePanel {}
+
                 Settings.InteractionModePanel {}
 
                 Settings.DebugPanel {}
@@ -103,18 +106,18 @@ PopupWindow {
                 Rectangle {
                     width: parent.width
                     height: 40
-                    radius: 8
-                    color: Qt.alpha("#938f99", 0.1)
+                    radius: Appearance.rounding.normal
+                    color: Colours.alpha(Colours.m3outline, 0.1)
                     border.width: 1
-                    border.color: Qt.alpha("#938f99", 0.2)
+                    border.color: Colours.alpha(Colours.m3outline, 0.2)
                     anchors.horizontalCenter: parent.horizontalCenter
 
                     Text {
                         anchors.centerIn: parent
                         text: "Close"
-                        font.family: "JetBrains Mono"
-                        font.pointSize: 12
-                        color: "#e6e0e9"
+                        font.family: Appearance.font.family.display
+                        font.pointSize: Appearance.font.size.body
+                        color: Colours.m3onSurface
                     }
 
                     MouseArea {

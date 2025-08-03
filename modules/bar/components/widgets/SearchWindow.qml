@@ -7,6 +7,7 @@ import QtQuick.Effects
 import Quickshell
 import "../../../../services"
 import "../../../../utils"
+import "../../../../config"
 
 Rectangle {
     id: searchWindow
@@ -14,8 +15,8 @@ Rectangle {
     width: 400
     height: searchInput.text.length > 0 ? 300 : 60
     visible: SearchManager.searchVisible
-    color: "#1c1b1f"
-    radius: 16
+    color: Colours.semantic.backgroundMain
+    radius: Appearance.rounding.large
     border.color: Qt.alpha("#938f99", 0.2)
     border.width: 1
 
@@ -68,10 +69,10 @@ Rectangle {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 40
-            color: Qt.alpha("#d0bcff", 0.05)
-            radius: 8
+            color: Qt.alpha(Colours.semantic.accent, 0.05)
+            radius: Appearance.rounding.normal
             border.width: 1
-            border.color: searchInput.activeFocus ? "#d0bcff" : Qt.alpha("#938f99", 0.3)
+            border.color: searchInput.activeFocus ? Colours.semantic.accent : Qt.alpha("#938f99", 0.3)
 
             Behavior on border.color {
                 ColorAnimation {
@@ -88,18 +89,18 @@ Rectangle {
 
                 Text {
                     text: "search"
-                    font.family: "Material Symbols Outlined"
-                    font.pointSize: 16
-                    color: "#d0bcff"
+                    font.family: Appearance.font.family.materialOutlined
+                    font.pointSize: Appearance.font.size.title
+                    color: Colours.semantic.accent
                 }
 
                 TextField {
                     id: searchInput
                     Layout.fillWidth: true
                     placeholderText: "Search applications, calculate, or run commands..."
-                    font.family: "JetBrains Mono"
-                    font.pointSize: 11
-                    color: "#e6e0e9"
+                    font.family: Appearance.font.family.mono
+                    font.pointSize: Appearance.font.size.normal
+                    color: Colours.semantic.textPrimary
                     placeholderTextColor: Qt.alpha("#938f99", 0.7)
                     selectByMouse: true
 
@@ -108,8 +109,8 @@ Rectangle {
 
                     // Standard TextField properties
                     renderType: Text.NativeRendering
-                    selectedTextColor: "#e6e0e9"
-                    selectionColor: Qt.alpha("#d0bcff", 0.3)
+                    selectedTextcolor: Colours.semantic.textPrimary
+                    selectionColor: Qt.alpha(Colours.semantic.accent, 0.3)
 
                     background: Rectangle {
                         color: "transparent"
@@ -147,7 +148,7 @@ Rectangle {
             Layout.fillHeight: true
             visible: searchInput.text.length > 0
             color: Qt.alpha("#938f99", 0.03)
-            radius: 8
+            radius: Appearance.rounding.normal
             border.width: 1
             border.color: Qt.alpha("#938f99", 0.1)
 
@@ -170,8 +171,8 @@ Rectangle {
 
                             width: parent.width
                             height: 32
-                            color: searchResultMouse.containsMouse ? Qt.alpha("#d0bcff", 0.08) : "transparent"
-                            radius: 4
+                            color: searchResultMouse.containsMouse ? Qt.alpha(Colours.semantic.accent, 0.08) : "transparent"
+                            radius: Appearance.rounding.small
 
                             Behavior on color {
                                 ColorAnimation {
@@ -188,25 +189,25 @@ Rectangle {
 
                                 Text {
                                     text: resultItem.modelData.icon || "app_registration"
-                                    font.family: "Material Symbols Outlined"
-                                    font.pointSize: 14
-                                    color: "#d0bcff"
+                                    font.family: Appearance.font.family.materialOutlined
+                                    font.pointSize: Appearance.font.size.large
+                                    color: Colours.semantic.accent
                                 }
 
                                 Text {
                                     Layout.fillWidth: true
                                     text: resultItem.modelData.name || "Search Result"
-                                    font.family: "JetBrains Mono"
-                                    font.pointSize: 10
-                                    color: "#e6e0e9"
+                                    font.family: Appearance.font.family.mono
+                                    font.pointSize: Appearance.font.size.smaller
+                                    color: Colours.semantic.textPrimary
                                     elide: Text.ElideRight
                                 }
 
                                 Text {
                                     text: resultItem.modelData.type || "App"
-                                    font.family: "JetBrains Mono"
-                                    font.pointSize: 9
-                                    color: "#938f99"
+                                    font.family: Appearance.font.family.mono
+                                    font.pointSize: Appearance.font.size.small
+                                    color: Colours.semantic.borderStrong
                                 }
                             }
 
@@ -228,9 +229,9 @@ Rectangle {
                         width: parent.width
                         visible: searchWindow.getSearchResults(searchInput.text).length === 0
                         text: "No results found"
-                        font.family: "JetBrains Mono"
-                        font.pointSize: 10
-                        color: "#938f99"
+                        font.family: Appearance.font.family.mono
+                        font.pointSize: Appearance.font.size.smaller
+                        color: Colours.semantic.borderStrong
                         horizontalAlignment: Text.AlignHCenter
                         topPadding: 20
                     }

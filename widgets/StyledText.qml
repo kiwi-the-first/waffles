@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import "../config"
 
 Text {
     id: root
@@ -13,9 +14,9 @@ Text {
 
     renderType: Text.NativeRendering
     textFormat: Text.PlainText
-    color: "#e6e0e9"
-    font.family: "IBM Plex Sans"
-    font.pointSize: 12
+    color: Colours.semantic.textPrimary
+    font.family: Appearance.font.family.sans
+    font.pointSize: Appearance.font.size.body
 
     Behavior on color {
         ColorAnimation {

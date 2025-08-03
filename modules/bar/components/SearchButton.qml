@@ -2,16 +2,17 @@ import QtQuick
 import QtQuick.Effects
 import "../../../widgets"
 import "../../../services"
+import "../../../config"
 
 Rectangle {
     id: searchButton
 
     width: 36
     height: 36
-    radius: 18
-    color: mouseArea.containsMouse ? Qt.alpha("#d0bcff", 0.12) : Qt.alpha("#d0bcff", 0.08)
+    radius: Appearance.rounding.large
+    color: mouseArea.containsMouse ? Qt.alpha(Colours.semantic.accent, 0.12) : Qt.alpha(Colours.semantic.accent, 0.08)
     border.width: 1
-    border.color: Qt.alpha("#d0bcff", 0.2)
+    border.color: Qt.alpha(Colours.semantic.accent, 0.2)
 
     // Hover effect
     Behavior on color {
@@ -25,8 +26,8 @@ Rectangle {
     MaterialIcon {
         anchors.centerIn: parent
         text: "search"
-        font.pointSize: 16
-        color: "#d0bcff"
+        font.pointSize: Appearance.font.size.title
+        color: Colours.semantic.accent
     }
 
     // Mouse interaction
@@ -48,6 +49,6 @@ Rectangle {
         shadowBlur: 0.6
         shadowHorizontalOffset: 0
         shadowVerticalOffset: 0
-        shadowColor: Qt.alpha("#d0bcff", 0.4)
+        shadowColor: Qt.alpha(Colours.semantic.accent, 0.4)
     }
 }

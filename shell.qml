@@ -72,8 +72,7 @@ ShellRoot {
         id: osdWindow
         objectName: "osdWindow"
         anchor.window: mainBar
-        anchor.rect.x: -90  // Position to the left of the bar
-        anchor.rect.y: 20   // Top margin
+        anchor.rect.x: (mainBar.screen.width - osdWindow.implicitWidth) / 2  // Center on screen
         visible: OSDManager.osdVisible
     }
 }

@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import "../config"
 
 Text {
     id: root
@@ -10,9 +11,9 @@ Text {
 
     renderType: Text.NativeRendering
     textFormat: Text.PlainText
-    color: "#e6e0e9"
-    font.family: "Material Symbols Rounded"
-    font.pointSize: 20
+    color: Colours.semantic.textPrimary
+    font.family: Appearance.font.family.material
+    font.pointSize: Appearance.font.size.iconLarge
     font.variableAxes: ({
             FILL: fill.toFixed(1),
             GRAD: grade,

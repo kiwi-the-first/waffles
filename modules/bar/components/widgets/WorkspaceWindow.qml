@@ -8,6 +8,7 @@ import Quickshell
 import Quickshell.Hyprland
 import "../../../../services"
 import "../../../../utils"
+import "../../../../config"
 import "../../../common"
 
 PopupWindow {
@@ -36,9 +37,9 @@ PopupWindow {
 
     Rectangle {
         anchors.fill: parent
-        color: "#1c1b1f"
-        radius: 12
-        border.color: Qt.alpha("#938f99", 0.2)
+        color: Colours.semantic.backgroundMain
+        radius: Appearance.rounding.larger
+        border.color: Colours.alpha(Colours.m3outline, 0.2)
         border.width: 1
 
         // Subtle shadow effect
@@ -48,7 +49,7 @@ PopupWindow {
             shadowBlur: 0.8
             shadowHorizontalOffset: 4
             shadowVerticalOffset: 4
-            shadowColor: Qt.alpha("#000000", 0.4)
+            shadowColor: Colours.alpha(Colours.m3shadow, 0.4)
         }
     }
 
@@ -69,10 +70,10 @@ PopupWindow {
             // Header
             Text {
                 text: "Workspaces"
-                font.family: "JetBrains Mono"
-                font.pointSize: 14
+                font.family: Appearance.font.family.display
+                font.pointSize: Appearance.font.size.large
                 font.weight: Font.Bold
-                color: "#d0bcff"
+                color: Colours.semantic.accent
                 width: parent.width
             }
 
@@ -80,7 +81,7 @@ PopupWindow {
             Rectangle {
                 width: parent.width
                 height: 1
-                color: Qt.alpha("#938f99", 0.2)
+                color: Colours.alpha(Colours.m3outline, 0.2)
             }
 
             // Display all available workspaces
@@ -110,10 +111,10 @@ PopupWindow {
                         id: workspaceRect
                         width: 96  // Fixed width for consistent layout
                         height: 80
-                        radius: 8
-                        color: mouseArea.containsMouse ? Qt.alpha("#938f99", 0.12) : Qt.alpha("#938f99", 0.08)
+                        radius: Appearance.rounding.normal
+                        color: mouseArea.containsMouse ? Colours.alpha(Colours.m3outline, 0.12) : Colours.alpha(Colours.m3outline, 0.08)
                         border.width: 1
-                        border.color: Qt.alpha("#938f99", 0.15)
+                        border.color: Colours.alpha(Colours.m3outline, 0.15)
 
                         required property string modelData  // The workspace ID as string
                         property var workspaceData: WorkspaceManager.workspaceData[modelData] || {
@@ -156,10 +157,10 @@ PopupWindow {
                                         // For any other format, return as-is
                                         return workspaceName;
                                     }
-                                    font.family: "JetBrains Mono"
-                                    font.pointSize: 10
+                                    font.family: Appearance.font.family.display
+                                    font.pointSize: Appearance.font.size.smaller
                                     font.weight: Font.Medium
-                                    color: "#d0bcff"
+                                    color: Colours.semantic.accent
                                     visible: mouseArea.containsMouse
                                     wrapMode: Text.WordWrap
                                     width: parent.width
@@ -194,10 +195,10 @@ PopupWindow {
                                             id: appIcon
                                             width: 24  // Increased from 16
                                             height: 24 // Increased from 16
-                                            radius: 4
-                                            color: Qt.alpha("#d0bcff", 0.2)
+                                            radius: Appearance.rounding.small
+                                            color: Colours.alpha(Colours.m3primary, 0.2)
                                             border.width: 1
-                                            border.color: Qt.alpha("#d0bcff", 0.3)
+                                            border.color: Colours.alpha(Colours.m3primary, 0.3)
 
                                             required property var modelData
 
@@ -222,10 +223,10 @@ PopupWindow {
                                                 id: fallbackIcon
                                                 anchors.centerIn: parent
                                                 text: (appIcon.modelData.class || "?")[0].toUpperCase()
-                                                font.family: "JetBrains Mono"
-                                                font.pointSize: 10  // Increased from 7
+                                                font.family: Appearance.font.family.display
+                                                font.pointSize: Appearance.font.size.smaller  // Increased from 7
                                                 font.weight: Font.Bold
-                                                color: "#d0bcff"
+                                                color: Colours.semantic.accent
                                                 visible: false
                                             }
 
@@ -318,9 +319,9 @@ PopupWindow {
                 Text {
                     anchors.centerIn: parent
                     text: "No active workspaces"
-                    font.family: "JetBrains Mono"
-                    font.pointSize: 10
-                    color: "#938f99"
+                    font.family: Appearance.font.family.display
+                    font.pointSize: Appearance.font.size.smaller
+                    color: Colours.semantic.borderStrong
                 }
             }
         }

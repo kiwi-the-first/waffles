@@ -1,12 +1,13 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import "../config"
 
 MouseArea {
     id: root
 
-    property color color: "#d0bcff"
-    property real radius: 17
+    property color color: Colours.semantic.accent
+    property real radius: Appearance.rounding.large
     property bool disabled: false
 
     signal clicked

@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Wayland
 import QtQuick.Effects
 import "components"
+import "../../config"
 
 PanelWindow {
     id: panel
@@ -27,8 +28,8 @@ PanelWindow {
         id: background
         anchors.fill: parent
         anchors.leftMargin: -5  // Extend beyond left edge to hide left corners
-        color: "#1c1b1f"
-        radius: 20  // This will create rounded corners on all sides, but left ones are hidden
+        color: Colours.semantic.backgroundMain
+        radius: Appearance.rounding.extraLarge  // This will create rounded corners on all sides, but left ones are hidden
 
         // Subtle shadow effect
         layer.enabled: true
@@ -37,7 +38,7 @@ PanelWindow {
             shadowBlur: 0.6
             shadowHorizontalOffset: 2
             shadowVerticalOffset: 0
-            shadowColor: Qt.alpha("#000000", 0.3)
+            shadowColor: Colours.alpha(Colours.m3shadow, 0.3)
         }
 
         // Workspace indicator at the top
@@ -87,7 +88,7 @@ PanelWindow {
             Rectangle {
                 width: 32
                 height: 1
-                color: Qt.alpha("#938f99", 0.3)
+                color: Colours.alpha(Colours.m3outline, 0.3)
                 anchors.horizontalCenter: parent.horizontalCenter
                 radius: 0.5
             }
@@ -101,7 +102,7 @@ PanelWindow {
             anchors.margins: 0.5
             color: "transparent"
             border.width: 0.5
-            border.color: Qt.alpha("#938f99", 0.1)
+            border.color: Colours.alpha(Colours.m3outline, 0.1)
         }
     }
 }

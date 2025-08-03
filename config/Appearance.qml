@@ -14,10 +14,14 @@ QtObject {
 
     // Rounding constants
     component Rounding: QtObject {
-        readonly property int small: 12
-        readonly property int normal: 17
-        readonly property int large: 25
-        readonly property int full: 1000
+        readonly property int tiny: 2        // For very small UI elements
+        readonly property int small: 4       // For small rounded corners
+        readonly property int smaller: 6     // For smaller buttons/elements
+        readonly property int normal: 8      // Most common radius
+        readonly property int larger: 12     // For medium buttons/panels
+        readonly property int large: 16      // For large panels/windows
+        readonly property int extraLarge: 20 // For major UI elements
+        readonly property int full: 1000     // For pill shapes
     }
 
     // Spacing constants
@@ -40,18 +44,32 @@ QtObject {
 
     // Font configuration
     component FontFamily: QtObject {
-        readonly property string sans: "IBM Plex Sans"
+        // readonly property string sans: "Rubik"  // Updated to match end-4/dots-hyprland
+        readonly property string sans: "SF Pro Display"
         readonly property string mono: "JetBrains Mono"
         readonly property string material: "Material Symbols Rounded"
+        readonly property string materialIcons: "Material Icons"  // Alternative material icons
+        readonly property string materialOutlined: "Material Symbols Outlined"  // Outlined material icons
+        readonly property string display: "SF Pro Display"  // For display/heading text
     }
 
     component FontSize: QtObject {
-        readonly property int small: 11
-        readonly property int smaller: 12
-        readonly property int normal: 13
-        readonly property int larger: 15
-        readonly property int large: 18
-        readonly property int extraLarge: 28
+        // Text sizes
+        readonly property int tiny: 8           // For very small text
+        readonly property int small: 9          // For small labels/tooltips
+        readonly property int smaller: 10       // For secondary text
+        readonly property int normal: 11        // For regular body text
+        readonly property int body: 12          // For primary body text
+        readonly property int medium: 13        // For medium text
+        readonly property int large: 14         // For headers
+        readonly property int larger: 15        // For large headers
+        readonly property int title: 16         // For titles/headings
+
+        // Icon sizes
+        readonly property int iconSmall: 16     // For small icons
+        readonly property int iconMedium: 18    // For medium icons (status)
+        readonly property int iconLarge: 20     // For large icons (default MaterialIcon)
+        readonly property int iconXLarge: 24    // For extra large icons (OSD)
     }
 
     component FontStuff: QtObject {

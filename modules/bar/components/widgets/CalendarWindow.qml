@@ -4,6 +4,7 @@ import QtQuick.Effects
 import QtQuick.Controls
 import Quickshell
 import "../../../../services"
+import "../../../../config"
 
 PopupWindow {
     id: calendarWindow
@@ -15,9 +16,9 @@ PopupWindow {
 
     Rectangle {
         anchors.fill: parent
-        color: "#1c1b1f"
-        radius: 12
-        border.color: Qt.alpha("#938f99", 0.2)
+        color: Colours.semantic.backgroundMain
+        radius: Appearance.rounding.larger
+        border.color: Colours.alpha(Colours.m3outline, 0.2)
         border.width: 1
 
         // HoverHandler to detect hover and prevent closing
@@ -44,7 +45,7 @@ PopupWindow {
             shadowBlur: 0.8
             shadowHorizontalOffset: 4
             shadowVerticalOffset: 4
-            shadowColor: Qt.alpha("#000000", 0.4)
+            shadowColor: Colours.alpha(Colours.m3shadow, 0.4)
         }
 
         ColumnLayout {
@@ -60,14 +61,14 @@ PopupWindow {
                 Rectangle {
                     width: 32
                     height: 32
-                    radius: 6
-                    color: mouseArea1.containsMouse ? Qt.alpha("#d0bcff", 0.12) : "transparent"
+                    radius: Appearance.rounding.smaller
+                    color: mouseArea1.containsMouse ? Colours.alpha(Colours.m3primary, 0.12) : "transparent"
 
                     Text {
                         anchors.centerIn: parent
                         text: "‹"
-                        color: "#d0bcff"
-                        font.pointSize: 16
+                        color: Colours.semantic.accent
+                        font.pointSize: Appearance.font.size.title
                         font.weight: Font.Bold
                     }
 
@@ -88,23 +89,23 @@ PopupWindow {
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignHCenter
                     text: calendar.monthNames[calendar.displayedMonth] + " " + calendar.displayedYear
-                    color: "#e6e0e9"
-                    font.pointSize: 14
+                    color: Colours.semantic.textPrimary
+                    font.pointSize: Appearance.font.size.large
                     font.weight: Font.Medium
-                    font.family: "JetBrains Mono"
+                    font.family: Appearance.font.family.display
                 }
 
                 Rectangle {
                     width: 32
                     height: 32
-                    radius: 6
-                    color: mouseArea2.containsMouse ? Qt.alpha("#d0bcff", 0.12) : "transparent"
+                    radius: Appearance.rounding.smaller
+                    color: mouseArea2.containsMouse ? Colours.alpha(Colours.m3primary, 0.12) : "transparent"
 
                     Text {
                         anchors.centerIn: parent
                         text: "›"
-                        color: "#d0bcff"
-                        font.pointSize: 16
+                        color: Colours.semantic.accent
+                        font.pointSize: Appearance.font.size.title
                         font.weight: Font.Bold
                     }
 
@@ -134,10 +135,10 @@ PopupWindow {
                     Text {
                         required property string modelData
                         text: modelData
-                        color: Qt.alpha("#938f99", 0.8)
-                        font.pointSize: 10
+                        color: Colours.alpha(Colours.m3outline, 0.8)
+                        font.pointSize: Appearance.font.size.smaller
                         font.weight: Font.Medium
-                        font.family: "JetBrains Mono"
+                        font.family: Appearance.font.family.display
                         horizontalAlignment: Text.AlignHCenter
                         Layout.preferredWidth: 32
                         Layout.preferredHeight: 24
@@ -169,7 +170,7 @@ PopupWindow {
                             required property int index
                             Layout.preferredWidth: 32
                             Layout.preferredHeight: 32
-                            radius: 6
+                            radius: Appearance.rounding.smaller
 
                             property var date: {
                                 let firstDay = new Date(calendar.displayedYear, calendar.displayedMonth, 1);
@@ -188,9 +189,9 @@ PopupWindow {
 
                             color: {
                                 if (isToday)
-                                    return "#d0bcff";
+                                    return Colours.semantic.accent;
                                 if (mouseArea.containsMouse)
-                                    return Qt.alpha("#d0bcff", 0.12);
+                                    return Colours.alpha(Colours.m3primary, 0.12);
                                 return "transparent";
                             }
 
@@ -206,14 +207,14 @@ PopupWindow {
                                 text: parent.date.getDate()
                                 color: {
                                     if (parent.isToday)
-                                        return "#1c1b1f";
+                                        return Colours.m3surface;
                                     if (parent.isCurrentMonth)
-                                        return "#e6e0e9";
-                                    return Qt.alpha("#938f99", 0.4);
+                                        return Colours.m3onSurface;
+                                    return Colours.alpha(Colours.m3outline, 0.4);
                                 }
-                                font.pointSize: 11
+                                font.pointSize: Appearance.font.size.normal
                                 font.weight: parent.isToday ? Font.Bold : Font.Normal
-                                font.family: "JetBrains Mono"
+                                font.family: Appearance.font.family.display
                             }
 
                             MouseArea {
@@ -232,17 +233,17 @@ PopupWindow {
                 Layout.alignment: Qt.AlignHCenter
                 width: 60
                 height: 32
-                radius: 8
-                color: todayMouseArea.containsMouse ? Qt.alpha("#d0bcff", 0.15) : Qt.alpha("#d0bcff", 0.08)
+                radius: Appearance.rounding.normal
+                color: todayMouseArea.containsMouse ? Colours.alpha(Colours.m3primary, 0.15) : Colours.alpha(Colours.m3primary, 0.08)
                 border.width: 1
-                border.color: Qt.alpha("#d0bcff", 0.3)
+                border.color: Colours.alpha(Colours.m3primary, 0.3)
 
                 Text {
                     anchors.centerIn: parent
                     text: "Today"
-                    color: "#d0bcff"
-                    font.pointSize: 11
-                    font.family: "JetBrains Mono"
+                    color: Colours.semantic.accent
+                    font.pointSize: Appearance.font.size.normal
+                    font.family: Appearance.font.family.display
                 }
 
                 MouseArea {

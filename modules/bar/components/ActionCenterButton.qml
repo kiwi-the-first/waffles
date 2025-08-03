@@ -3,15 +3,16 @@ import QtQuick.Controls
 import QtQuick.Effects
 import "../../../services"
 import "../../../widgets" as Widgets
+import "../../../config"
 
 Rectangle {
     id: root
 
     implicitWidth: 44
     implicitHeight: 36
-    radius: 12
+    radius: Appearance.rounding.larger
 
-    color: buttonHover.containsMouse ? Qt.alpha("#d0bcff", 0.12) : "transparent"
+    color: buttonHover.containsMouse ? Qt.alpha(Colours.semantic.accent, 0.12) : "transparent"
     border.width: 1
     border.color: Qt.alpha("#938f99", 0.08)
 
@@ -51,8 +52,8 @@ Rectangle {
     Widgets.MaterialIcon {
         anchors.centerIn: parent
         text: root.expanded ? "keyboard_arrow_left" : "keyboard_arrow_right"
-        color: "#e6e0e9"
-        font.pointSize: 18
+        color: Colours.semantic.textPrimary
+        font.pointSize: Appearance.font.size.iconMedium
         fill: buttonHover.containsMouse ? 1 : 0
         animate: true
 

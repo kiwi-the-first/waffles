@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Io
 import QtQuick
 import "../utils"
+import "../config"
 
 Singleton {
     id: root
@@ -40,13 +41,13 @@ Singleton {
         function brightnessUp(): void {
             DebugUtils.log("IPC: Brightness Up called");
             Brightness.increaseBrightness();
-            OSDManager.show();
+            OSDManager.showBrightness();
         }
 
         function brightnessDown(): void {
             DebugUtils.log("IPC: Brightness Down called");
             Brightness.decreaseBrightness();
-            OSDManager.show();
+            OSDManager.showBrightness();
         }
     }
 
@@ -79,6 +80,39 @@ Singleton {
         function mediaStop(): void {
             DebugUtils.log("IPC: Media Stop called");
             Players.active?.stop();
+        }
+    }
+
+    // Theme IPC Handler
+    IpcHandler {
+        target: "theme"
+        enabled: true
+
+        function setTheme(theme: string): void {
+            DebugUtils.log("IPC: Set Theme called with:", theme);
+            if (theme === "light" || theme === "dark" || theme === "auto") {
+                Colours.currentTheme = theme === "auto" ? "dynamic" : theme;
+                DebugUtils.log("IPC: Theme changed to:", Colours.currentTheme);
+            } else {
+                DebugUtils.log("IPC: Invalid theme specified:", theme);
+            }
+        }
+
+        function toggleTheme(): void {
+            DebugUtils.log("IPC: Toggle Theme called");
+            if (Colours.currentTheme === "light") {
+                Colours.currentTheme = "dark";
+            } else {
+                Colours.currentTheme = "light";
+            }
+            DebugUtils.log("IPC: Theme toggled to:", Colours.currentTheme);
+        }
+
+        function getTheme(): string {
+            DebugUtils.log("IPC: Get Theme called");
+            const theme = Colours.currentTheme === "dynamic" ? "auto" : Colours.currentTheme;
+            DebugUtils.log("IPC: Current theme:", theme);
+            return theme;
         }
     }
 }

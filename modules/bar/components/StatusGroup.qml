@@ -1,15 +1,16 @@
 pragma ComponentBehavior: Bound
 import QtQuick
 import "status" as Status
+import "../../../config"
 
 Rectangle {
     id: root
 
     implicitWidth: 44
     implicitHeight: iconsColumn.implicitHeight + 16
-    radius: 17
+    radius: Appearance.rounding.large
 
-    color: Qt.alpha("#d0bcff", 0.05)
+    color: Qt.alpha(Colours.semantic.accent, 0.05)
     border.width: 1
     border.color: Qt.alpha("#938f99", 0.08)
 
@@ -20,7 +21,7 @@ Rectangle {
         gradient: Gradient {
             GradientStop {
                 position: 0.0
-                color: Qt.alpha("#d0bcff", 0.02)
+                color: Qt.alpha(Colours.semantic.accent, 0.02)
             }
             GradientStop {
                 position: 1.0

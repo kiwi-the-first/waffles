@@ -10,25 +10,31 @@ Singleton {
     id: root
 
     property list<var> ddcMonitors: []
-    readonly property list<Monitor> monitors: variants.instances
+    readonly property var monitors: variants.instances
     property bool appleDisplayPresent: false
 
     function getMonitorForScreen(screen: ShellScreen): var {
-        return monitors.find(m => m.modelData === screen);
+        // Simple approach - just return the first monitor that matches
+        for (const monitor of monitors) {
+            if (monitor.modelData === screen) {
+                return monitor;
+            }
+        }
+        return null;
     }
 
     function increaseBrightness(): void {
-        const focusedName = Hyprland.focusedMonitor.name;
-        const monitor = monitors.find(m => focusedName === m.modelData.name);
-        if (monitor)
-            monitor.setBrightness(monitor.brightness + 0.1);
+        // For simplicity, just use the first monitor
+        if (monitors[0]) {
+            monitors[0].setBrightness(monitors[0].brightness + 0.01);
+        }
     }
 
     function decreaseBrightness(): void {
-        const focusedName = Hyprland.focusedMonitor.name;
-        const monitor = monitors.find(m => focusedName === m.modelData.name);
-        if (monitor)
-            monitor.setBrightness(monitor.brightness - 0.1);
+        // For simplicity, just use the first monitor
+        if (monitors[0]) {
+            monitors[0].setBrightness(monitors[0].brightness - 0.01);
+        }
     }
 
     onMonitorsChanged: {
