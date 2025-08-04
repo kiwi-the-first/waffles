@@ -11,12 +11,23 @@ Singleton {
     property real hideDelay: 1500  // Reduced from 2000ms to 1.5s for better UX
     property bool hovered: false
     property string currentType: "volume" // "volume" or "brightness"
+    property bool startupComplete: false  // Track if initial startup is complete
 
     readonly property Timer hideTimer: Timer {
         interval: root.hideDelay
         onTriggered: {
             if (!root.hovered)
                 root.osdVisible = false;
+        }
+    }
+
+    // Startup delay timer to prevent OSD from showing during initial audio service setup
+    readonly property Timer startupTimer: Timer {
+        interval: 1000  // Wait 1 second after startup before allowing OSD to show
+        running: true
+        onTriggered: {
+            root.startupComplete = true;
+            DebugUtils.log("OSDManager: Startup complete, OSD now available");
         }
     }
 
@@ -27,6 +38,10 @@ Singleton {
     }
 
     function showVolume(): void {
+        if (!root.startupComplete) {
+            DebugUtils.log("OSDManager: Ignoring volume change during startup");
+            return;
+        }
         DebugUtils.log("OSDManager: Showing Volume OSD");
         root.currentType = "volume";
         root.osdVisible = true;
@@ -51,11 +66,19 @@ Singleton {
         target: Audio
 
         function onMutedChanged(): void {
+            if (!root.startupComplete) {
+                DebugUtils.log("OSDManager: Ignoring mute change during startup");
+                return;
+            }
             DebugUtils.log("OSDManager: Audio muted changed to", Audio.muted);
             root.showVolume();
         }
 
         function onVolumeChanged(): void {
+            if (!root.startupComplete) {
+                DebugUtils.log("OSDManager: Ignoring volume change during startup");
+                return;
+            }
             DebugUtils.log("OSDManager: Audio volume changed to", Audio.volume);
             root.showVolume();
         }

@@ -63,8 +63,10 @@ ShellRoot {
         id: settingsWindow
         objectName: "settingsWindow"
         anchor.window: mainBar
-        anchor.rect.x: 70
-        anchor.rect.y: 440
+        anchor.rect.x: (mainBar.screen.width - searchWindow.implicitWidth) / 2  // Center horizontally
+        anchor.rect.y: (mainBar.screen.height - searchWindow.implicitHeight) / 2  // Center vertically
+        // anchor.rect.x: 70
+        // anchor.rect.y: 440
         visible: SettingsManager.settingsWindowVisible
     }
 
@@ -83,6 +85,7 @@ ShellRoot {
         objectName: "osdWindow"
         anchor.window: mainBar
         anchor.rect.x: (mainBar.screen.width - osdWindow.implicitWidth) / 2  // Center on screen
+        anchor.rect.y: 850   // Position above the calendar
         visible: OSDManager.osdVisible
     }
 }

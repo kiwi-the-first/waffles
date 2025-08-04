@@ -45,7 +45,8 @@ Rectangle {
 
             if (parent.isCharging) {
                 if (parent.percentage >= 95)
-                    return "battery_charging_full";
+                    // return "battery_charging_full";
+                    return "battery_full";
                 if (parent.percentage >= 80)
                     return "battery_charging_90";
                 if (parent.percentage >= 60)
