@@ -48,8 +48,9 @@ QtObject {
             "btop": "htop",
 
             // System & Utilities
-            "nautilus": "file-manager",
-            "org.gnome.nautilus": "file-manager",
+            "nautilus": "nautilus",
+            "org.gnome.nautilus": "nautilus",
+            // "org.gnome.nautilus": "org.gnome.Nautilus",
             "dolphin": "folder",
             "thunar": "folder",
             "pcmanfm": "folder",
@@ -96,6 +97,7 @@ QtObject {
             "writer": "libreoffice-writer",
             "calc": "libreoffice-calc",
             "impress": "libreoffice-impress",
+            "org.gnome.evince": "evince",
 
             // Graphics
             "gimp": "gimp",

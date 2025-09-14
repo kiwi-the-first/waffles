@@ -3,13 +3,18 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Io
 import QtQuick
-import "modules/bar"
-import "modules/bar/components" as Components
-import "modules/bar/components/widgets" as Widgets
-import "services"
+import qs.modules.bar
+import qs.modules.clock
+import qs.modules.bar.components as Components
+import qs.modules.bar.components.widgets as Widgets
+import qs.services
+
+// import qs.utils
 
 ShellRoot {
     // Force IPCManager instantiation (required for IpcHandlers to work)
+    // Wallpaper {}
+
     property var ipcManager: IPCManager
 
     Bar {
@@ -44,6 +49,31 @@ ShellRoot {
         anchor.rect.x: 70
         anchor.rect.y: 800  // Position near the network icon
         visible: NetworkManager.networkSelectorVisible
+    }
+
+    // Widgets.SearchWindowAsPanelWindow {
+    //     id: searchWindow
+    //     objectName: "searchWindow"
+    //     anchor.window: mainBar
+    //     anchor.rect.x: (mainBar.scren.width - searchWindow.implicitWidth) / 2  // Center horizontally
+    //     anchor.rect.y: (mainBar.screen.height - searchWindow.implicitHeight) / 2  // Center vertically
+    //     visible: SearchManager.searchVisible
+    //
+    //     Component.onCompleted: {
+    //         SearchManager.setSearchWindow(searchWindow);
+    //     }
+    // }
+
+    BigClock {
+        anchors {
+            top: true
+            bottom: true
+            left: true
+            right: true
+        }
+
+        margins.left: -50
+        margins.top: -600
     }
 
     Widgets.SearchWindow {

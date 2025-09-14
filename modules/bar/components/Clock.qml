@@ -1,7 +1,7 @@
 import Quickshell
 import QtQuick
 import "../../../widgets" as Widgets
-import "../../../services" as Root
+import "../../../services" as Services
 import "../../../config"
 
 Rectangle {
@@ -47,19 +47,19 @@ Rectangle {
         onCanceled: root.scale = 1.0
 
         onClicked: {
-            Root.CalendarManager.toggleCalendar();
+            Services.CalendarManager.toggleCalendar();
         }
 
         onEntered: {
-            if (Root.CalendarManager.hoverMode) {
-                Root.CalendarManager.stopHideTimer(); // Cancel any pending hide
-                Root.CalendarManager.showCalendar();
+            if (Services.CalendarManager.hoverMode) {
+                Services.CalendarManager.stopHideTimer(); // Cancel any pending hide
+                Services.CalendarManager.showCalendar();
             }
         }
 
         onExited: {
-            if (Root.CalendarManager.hoverMode) {
-                Root.CalendarManager.startHideTimer(); // Start delay before hiding
+            if (Services.CalendarManager.hoverMode) {
+                Services.CalendarManager.startHideTimer(); // Start delay before hiding
             }
         }
     }

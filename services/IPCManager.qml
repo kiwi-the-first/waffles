@@ -104,6 +104,16 @@ Singleton {
         }
     }
 
+    IpcHandler {
+        target: "overview"
+        enabled: true
+
+        function toggle(): void {
+            DebugUtils.log("IPC: Overview Toggle called");
+            WorkspaceManager.toggleWorkspaceWindow();
+        }
+    }
+
     // Theme IPC Handler
     IpcHandler {
         target: "theme"

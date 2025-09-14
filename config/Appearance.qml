@@ -15,6 +15,7 @@ QtObject {
 
     // Rounding constants
     component Rounding: QtObject {
+        readonly property int none: 0        // Disable rounding
         readonly property int tiny: 2        // For very small UI elements
         readonly property int small: 4       // For small rounded corners
         readonly property int smaller: 6     // For smaller buttons/elements
