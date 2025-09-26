@@ -2,7 +2,7 @@ pragma Singleton
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import "../services"
+import qs.services
 
 QtObject {
     id: root
