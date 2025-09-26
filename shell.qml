@@ -79,9 +79,9 @@ ShellRoot {
     Widgets.SearchWindow {
         id: searchWindow
         objectName: "searchWindow"
-        anchor.window: mainBar
-        anchor.rect.x: (mainBar.screen.width - searchWindow.implicitWidth) / 2  // Center horizontally
-        anchor.rect.y: (mainBar.screen.height - searchWindow.implicitHeight) / 2  // Center vertically
+        // anchor.window: mainBar
+        // anchor.rect.x: (mainBar.screen.width - searchWindow.implicitWidth) / 2  // Center horizontally
+        // anchor.rect.y: (mainBar.screen.height - searchWindow.implicitHeight) / 2  // Center vertically
         visible: SearchManager.searchVisible
 
         Component.onCompleted: {

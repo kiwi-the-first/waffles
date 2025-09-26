@@ -11,34 +11,53 @@ import "../../../../utils"
 import "../../../../widgets" as Widgets
 import "../../../../config"
 
-PopupWindow {
+PanelWindow {
     id: searchWindow
+
+    // Expose the input so external callers can reset/focus like other modules do
+    property alias searchField: searchInput
 
     implicitWidth: 500
     implicitHeight: Math.max(400, Math.min(600, searchList.contentHeight + 120))
     visible: false
     color: "transparent"
+    WlrLayershell.layer: WlrLayer.Top
+    // Important: without requesting keyboard focus on Wayland, this PanelWindow
+    // will not receive key events (so TextField won't focus type). Using Exclusive
+    // here because this modal contains the only active text input while visible
+    // and does not spawn other nested popups that need focus. Mirrors DankModal pattern.
+    WlrLayershell.keyboardFocus: visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+    // Allow it to float without reserving space
+    WlrLayershell.exclusiveZone: -1
 
     property string searchText: ""
     property var searchResults: []
     property bool searchActive: false
 
-    // Handle window visibility changes to manage focus
+    // Handle window visibility changes to manage focus and reset state like AppDrawer/Spotlight
     onVisibleChanged: {
         if (visible) {
-            DebugUtils.debug("SearchWindow became visible, setting focus");
-            // Use the end-4 approach: direct focus binding
-            searchInput.forceActiveFocus();
+            DebugUtils.debug("SearchWindow became visible, scheduling focus and reset");
+            // Reset search state to be consistent with other modals
+            searchInput.text = "";
+            searchResults = [];
+            searchList.currentIndex = -1;
+
+            // Defer focus to ensure the TextField exists and is ready
+            Qt.callLater(function () {
+                searchInput.forceActiveFocus();
+                // Force focus scope as well (belt & suspenders on some compositors)
+                focusScope.forceActiveFocus();
+            });
         }
     }
 
-    // Methods to show/hide the search window
+    // Methods to show/hide the search window (modal-like)
     function showSearch() {
         DebugUtils.debug("SearchWindow.showSearch() called");
         searchWindow.visible = true;
         SearchManager.searchVisible = true;
-        // Direct focus like end-4/dots-hyprland
-        searchInput.forceActiveFocus();
+        Qt.callLater(() => searchInput.forceActiveFocus());
     }
 
     function hideSearch() {
@@ -49,7 +68,14 @@ PopupWindow {
         SearchManager.searchVisible = false;
     }
 
-    // Sync with SearchManager
+    // Sync with SearchManager and register this window
+    Component.onCompleted: {
+        // Register the window reference so SearchManager can call show/hide
+        try {
+            SearchManager.setSearchWindow(searchWindow);
+        } catch (e) {}
+    }
+
     Connections {
         target: SearchManager
         function onSearchVisibleChanged() {
@@ -80,6 +106,7 @@ PopupWindow {
 
         // Focus scope to manage keyboard focus within the search window
         FocusScope {
+            id: focusScope
             anchors.fill: parent
             focus: searchWindow.visible
 
@@ -204,7 +231,8 @@ PopupWindow {
                             placeholderTextColor: Colours.m3onSurfaceVariant
 
                             // Direct focus binding like end-4/dots-hyprland
-                            focus: searchWindow.visible
+                            // Let programmatic focus control handle this; binding to visibility can steal focus back.
+                            focus: false
                             activeFocusOnTab: true
                             focusPolicy: Qt.StrongFocus
 
@@ -261,11 +289,24 @@ PopupWindow {
                         model: searchWindow.searchResults
                         spacing: 4
                         currentIndex: -1
+                        focus: true
+                        interactive: true
+                        cacheBuffer: Math.max(0, Math.min(height * 2, 1000))
+                        reuseItems: true
 
                         // Highlight current item
                         highlight: Rectangle {
                             color: Colours.alpha(Colours.m3primary, 0.12)
                             radius: Appearance.rounding.normal
+                        }
+
+                        onCurrentIndexChanged: function () {
+                            if (currentIndex >= 0) {
+                                // Ensure the selection is visible for keyboard navigation
+                                Qt.callLater(function () {
+                                    searchList.positionViewAtIndex(currentIndex, ListView.Contain);
+                                });
+                            }
                         }
 
                         delegate: Rectangle {
@@ -494,12 +535,5 @@ PopupWindow {
 
         // Hide search window after execution
         searchWindow.hideSearch();
-    }
-
-    // Handle clicking outside to close
-    MouseArea {
-        anchors.fill: parent
-        z: -1
-        onClicked: searchWindow.hideSearch()
     }
 }

@@ -4,6 +4,7 @@ import QtQuick.Effects
 import "../../../services"
 import "../../../widgets" as Widgets
 import "../../../config"
+import qs.modules.actioncenter
 
 Rectangle {
     id: root
@@ -51,7 +52,8 @@ Rectangle {
 
     Widgets.MaterialIcon {
         anchors.centerIn: parent
-        text: root.expanded ? "keyboard_arrow_left" : "keyboard_arrow_right"
+        // text: root.expanded ? "keyboard_arrow_left" : "keyboard_arrow_right"
+        text: root.expanded ? "close_fullscreen" : "dashboard_customize"
         color: Colours.semantic.textPrimary
         font.pointSize: Appearance.font.size.iconMedium
         fill: buttonHover.containsMouse ? 1 : 0

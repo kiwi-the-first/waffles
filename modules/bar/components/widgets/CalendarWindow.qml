@@ -58,6 +58,16 @@ PopupWindow {
                 Layout.fillWidth: true
                 spacing: 8
 
+                Text {
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignLeft
+                    text: calendar.monthNames[calendar.displayedMonth] + " " + calendar.displayedYear
+                    color: Colours.semantic.textPrimary
+                    font.pointSize: Appearance.font.size.large
+                    font.weight: Font.Medium
+                    font.family: Appearance.font.family.display
+                }
+
                 Rectangle {
                     width: 32
                     height: 32
@@ -83,16 +93,6 @@ PopupWindow {
                             calendar.displayedMonth = newDate.getMonth();
                         }
                     }
-                }
-
-                Text {
-                    Layout.fillWidth: true
-                    horizontalAlignment: Text.AlignHCenter
-                    text: calendar.monthNames[calendar.displayedMonth] + " " + calendar.displayedYear
-                    color: Colours.semantic.textPrimary
-                    font.pointSize: Appearance.font.size.large
-                    font.weight: Font.Medium
-                    font.family: Appearance.font.family.display
                 }
 
                 Rectangle {

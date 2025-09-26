@@ -14,6 +14,8 @@ QtObject {
 
         // Direct icon name mappings for common applications
         const iconMappings = {
+            "chrome-hnpfjngllnobngcgfapefoaidbinmjnm-default": "whatsapp",
+            "net.nokyan.resources": "gnome-monitor",
             // Browsers
             "firefox": "firefox",
             "google-chrome": "google-chrome",

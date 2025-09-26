@@ -38,10 +38,42 @@ Rectangle {
         anchors.centerIn: parent
         animate: true
 
+        // Icon glyph (hidden while hovered so percentage can show)
         text: parent.muted ? "volume_off" : parent.volume >= 0.66 ? "volume_up" : parent.volume >= 0.33 ? "volume_down" : "volume_mute"
         color: parent.muted ? Colours.m3error : Colours.m3onSurface
         font.pointSize: Appearance.font.size.iconMedium
-        fill: volumeHover.containsMouse ? 1 : 0
+
+        // Hide the icon while hovered so the percentage Text is shown instead
+        opacity: volumeHover.containsMouse ? 0 : 1
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 150
+                easing.type: Easing.OutQuad
+            }
+        }
+    }
+
+    // Show numeric volume when hovered
+    Text {
+        anchors.centerIn: parent
+
+        text: volumeHover.containsMouse ? (parent.muted ? "Muted" : Math.round(parent.volume * 100).toString() + "%") : ""
+
+        // Only visible when hovered
+        opacity: volumeHover.containsMouse ? 1 : 0
+
+        font.family: Appearance.font.family.display
+        font.pointSize: Appearance.font.size.body
+        font.weight: Font.Medium
+        color: parent.muted ? Colours.m3error : Colours.m3onSurface
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 150
+                easing.type: Easing.OutQuad
+            }
+        }
     }
 
     // Audio service tracking

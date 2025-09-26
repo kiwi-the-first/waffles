@@ -3,7 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Widgets
-import "../utils"
+import qs.utils
 
 QtObject {
     id: root

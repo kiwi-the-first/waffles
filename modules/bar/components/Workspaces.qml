@@ -2,10 +2,11 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Hyprland
-import "../../../services"
-import "../../../widgets" as Widgets
-import "../../common"
-import "../../../config"
+import Quickshell
+import qs.services
+// import qs.modules.helper.widgets as Widgets
+import qs.modules.common
+import qs.config
 
 Rectangle {
     id: root

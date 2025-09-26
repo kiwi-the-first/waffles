@@ -12,3 +12,4 @@ singleton OSDManager 1.0 OSDManager.qml
 singleton Players 1.0 Players.qml
 singleton PersistentSettings 1.0 PersistentSettings.qml
 WorkspaceDataProvider 1.0 WorkspaceDataProvider.qml
+
