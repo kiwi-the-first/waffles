@@ -43,6 +43,10 @@ Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
+        Status.PowerProfileIcon {
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
         Status.VolumeIcon {
             anchors.horizontalCenter: parent.horizontalCenter
         }

@@ -10,7 +10,7 @@ import qs.services
 import qs.utils
 import qs.widgets as Widgets
 import qs.config
-import qs.modules.actioncenter.model
+// import qs.modules.actioncenter.model
 
 // Full-height right side action center panel with navbar tabs
 PanelWindow {
