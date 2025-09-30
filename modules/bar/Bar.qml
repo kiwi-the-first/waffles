@@ -27,7 +27,6 @@ PanelWindow {
     Rectangle {
         id: background
         anchors.fill: parent
-        // anchors.leftMargin: -5  // Extend beyond left edge to hide left corners
         color: Colours.semantic.backgroundMain
         radius: Appearance.rounding.extraLarge  // This will create rounded corners on all sides, but left ones are hidden
         topLeftRadius: Appearance.rounding.none

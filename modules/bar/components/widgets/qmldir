@@ -1,0 +1,18 @@
+module widgets
+ActionCenterWindow 1.0 ActionCenterWindow.qml
+CalendarWindow 1.0 CalendarWindow.qml
+DankModal 1.0 DankModal.qml
+IconButton 1.0 IconButton.qml
+NetworkItem 1.0 NetworkItem.qml
+NetworkSelectorWindow 1.0 NetworkSelectorWindow.qml
+NotificationHistoryContent 1.0 NotificationHistoryContent.qml
+NotificationHistoryItem 1.0 NotificationHistoryItem.qml
+NotificationPopup 1.0 NotificationPopup.qml
+NotificationPopupManager 1.0 NotificationPopupManager.qml
+OSDWindowPopup 1.0 OSDWindowPopup.qml
+SearchWindow 1.0 SearchWindow.qml
+SettingsWindow 1.0 SettingsWindow.qml
+StandardButton 1.0 StandardButton.qml
+StandardSwitch 1.0 StandardSwitch.qml
+WiFiPanel 1.0 WiFiPanel.qml
+WorkspaceWindow 1.0 WorkspaceWindow.qml

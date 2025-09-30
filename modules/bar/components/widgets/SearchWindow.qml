@@ -192,7 +192,14 @@ PanelWindow {
                             Layout.preferredWidth: 32
                             Layout.preferredHeight: 32
                             radius: Appearance.rounding.normal
-                            color: closeButton.containsMouse ? Colours.alpha(Colours.m3error, 0.12) : "transparent"
+                            color: closeButton.containsMouse ? Qt.alpha("#938f99", 0.15) : "transparent"
+
+                            Widgets.MaterialIcon {
+                                anchors.centerIn: parent
+                                text: "close"
+                                color: Colours.m3onSurface
+                                font.pointSize: Appearance.font.size.iconMedium
+                            }
 
                             MouseArea {
                                 id: closeButton
@@ -202,11 +209,11 @@ PanelWindow {
                                 onClicked: searchWindow.hideSearch()
                             }
 
-                            Widgets.MaterialIcon {
-                                anchors.centerIn: parent
-                                text: "close"
-                                color: Colours.m3error
-                                font.pointSize: Appearance.font.size.normal
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: 200
+                                    easing.type: Easing.OutQuad
+                                }
                             }
                         }
                     }

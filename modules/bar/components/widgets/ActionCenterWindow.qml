@@ -3,284 +3,258 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Effects
 import Quickshell
+import Quickshell.Wayland
+import Quickshell.Hyprland
+import Quickshell.Io
 import "../../../../services"
 import "../../../settings" as Settings
 import "../../../../utils"
 import "../../../../widgets" as Widgets
 import "../../../../config"
 
-PopupWindow {
+PanelWindow {
     id: actionCenterWindow
 
-    implicitWidth: 300
-    implicitHeight: 420
+    anchors {
+        top: true
+        bottom: true
+        right: true
+    }
+
+    margins {
+        top: 10
+        bottom: 10
+        right: 10
+    }
+
+    implicitWidth: 380
     visible: false
     color: "transparent"
+    WlrLayershell.layer: WlrLayer.Top
+    WlrLayershell.keyboardFocus: visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+    WlrLayershell.exclusiveZone: -1
 
-    Rectangle {
+    // Process for wlogout command
+    Process {
+        id: wlogoutProcess
+        command: ["wlogout", "-b", "3", "-T", "250", "-B", "250", "-L", "500", "-R", "500", "-c", "40", "-r", "40", "--protocol", "layer-shell"]
+        running: false
+    }
+
+    // Handle visibility changes and focus
+    onVisibleChanged: {
+        if (visible) {
+            focusScope.forceActiveFocus();
+        }
+    }
+
+    // Function to close the action center
+    function closeActionCenter() {
+        ActionCenterManager.closeActionCenter();
+    }
+
+    // Focus scope for keyboard handling
+    FocusScope {
+        id: focusScope
         anchors.fill: parent
-        color: Colours.semantic.backgroundMain
-        radius: Appearance.rounding.large
-        border.color: Qt.alpha("#938f99", 0.2)
-        border.width: 1
+        focus: actionCenterWindow.visible
 
-        // HoverHandler to detect hover and prevent closing
-        HoverHandler {
-            id: actionCenterHover
-
-            onHoveredChanged: {
-                if (ActionCenterManager.hoverMode) {
-                    if (hovered) {
-                        ActionCenterManager.actionCenterHovered = true;
-                        ActionCenterManager.stopHideTimer();
-                    } else {
-                        ActionCenterManager.actionCenterHovered = false;
-                        ActionCenterManager.startHideTimer();
-                    }
-                }
+        // Global keyboard handler for escape key
+        Keys.onPressed: event => {
+            if (event.key === Qt.Key_Escape) {
+                closeActionCenter();
+                event.accepted = true;
             }
         }
 
-        // Subtle shadow effect
-        layer.enabled: true
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowBlur: 0.8
-            shadowHorizontalOffset: 4
-            shadowVerticalOffset: 4
-            shadowColor: Qt.alpha("#000000", 0.4)
-        }
-
-        ScrollView {
+        Rectangle {
             anchors.fill: parent
-            anchors.margins: 20
-            contentWidth: availableWidth
-            clip: true
+            color: Colours.semantic.backgroundMain
+            radius: Appearance.rounding.large
+            border.color: Qt.alpha("#938f99", 0.2)
+            border.width: 1
 
-            ScrollBar.vertical.policy: ScrollBar.AsNeeded
-            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+            // HoverHandler to detect hover and prevent closing
+            HoverHandler {
+                id: actionCenterHover
 
-            Column {
-                width: parent.width
-                spacing: 16
-
-                // Header
-                Rectangle {
-                    width: parent.width
-                    height: 40
-                    color: "transparent"
-
-                    Text {
-                        anchors.left: parent.left
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: "Action Center"
-                        font.family: Appearance.font.family.display
-                        font.pointSize: Appearance.font.size.title
-                        font.weight: Font.Medium
-                        color: Colours.semantic.textPrimary
-                    }
-                }
-
-                // Separator
-                Rectangle {
-                    width: parent.width
-                    height: 1
-                    color: Qt.alpha("#938f99", 0.3)
-                }
-
-                // Quick Settings Section
-                Rectangle {
-                    width: parent.width
-                    height: 120
-                    color: Qt.alpha(Colours.semantic.accent, 0.05)
-                    radius: Appearance.rounding.larger
-                    border.width: 1
-                    border.color: Qt.alpha("#938f99", 0.1)
-
-                    Column {
-                        anchors.fill: parent
-                        anchors.margins: 16
-                        spacing: 8
-
-                        Text {
-                            text: "Quick Settings"
-                            font.family: Appearance.font.family.display
-                            font.pointSize: Appearance.font.size.body
-                            font.weight: Font.Medium
-                            color: Colours.semantic.accent
-                        }
-
-                        Text {
-                            text: "• WiFi controls"
-                            font.family: Appearance.font.family.display
-                            font.pointSize: Appearance.font.size.smaller
-                            color: Colours.semantic.borderStrong
-                        }
-
-                        Text {
-                            text: "• Volume mixer"
-                            font.family: Appearance.font.family.display
-                            font.pointSize: Appearance.font.size.smaller
-                            color: Colours.semantic.borderStrong
-                        }
-
-                        Text {
-                            text: "• Bluetooth settings"
-                            font.family: Appearance.font.family.display
-                            font.pointSize: Appearance.font.size.smaller
-                            color: Colours.semantic.borderStrong
+                onHoveredChanged: {
+                    if (ActionCenterManager.hoverMode) {
+                        if (hovered) {
+                            ActionCenterManager.actionCenterHovered = true;
+                            ActionCenterManager.stopHideTimer();
+                        } else {
+                            ActionCenterManager.actionCenterHovered = false;
+                            ActionCenterManager.startHideTimer();
                         }
                     }
                 }
+            }
 
-                // Settings Button
-                Rectangle {
+            // Subtle shadow effect
+            layer.enabled: true
+            layer.effect: MultiEffect {
+                shadowEnabled: true
+                shadowBlur: 0.8
+                shadowHorizontalOffset: 4
+                shadowVerticalOffset: 4
+                shadowColor: Qt.alpha("#000000", 0.4)
+            }
+
+            ScrollView {
+                anchors.fill: parent
+                anchors.margins: 20
+                contentWidth: availableWidth
+                clip: true
+
+                ScrollBar.vertical.policy: ScrollBar.AsNeeded
+                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+
+                Column {
                     width: parent.width
-                    height: 50
-                    color: Qt.alpha("#938f99", 0.05)
-                    radius: Appearance.rounding.larger
-                    border.width: 1
-                    border.color: Qt.alpha("#938f99", 0.1)
+                    spacing: 16
 
-                    Row {
-                        anchors.centerIn: parent
-                        spacing: 12
+                    // Header
+                    Rectangle {
+                        width: parent.width
+                        height: 40
+                        color: "transparent"
 
-                        Widgets.MaterialIcon {
-                            text: "settings"
-                            font.pointSize: Appearance.font.size.iconMedium
-                            color: Colours.semantic.textPrimary
+                        Text {
+                            anchors.left: parent.left
                             anchors.verticalCenter: parent.verticalCenter
-                        }
-
-                        Text {
-                            text: "Settings"
+                            text: "Action Center"
                             font.family: Appearance.font.family.display
-                            font.pointSize: Appearance.font.size.body
+                            font.pointSize: Appearance.font.size.title
                             font.weight: Font.Medium
                             color: Colours.semantic.textPrimary
+                        }
+
+                        // Header button row
+                        Row {
+                            anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                        }
-                    }
+                            spacing: 8
 
-                    MouseArea {
-                        id: settingsMouseArea
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        hoverEnabled: true
-                        onClicked: {
-                            SettingsManager.showSettingsWindow();
-                        }
-                        onContainsMouseChanged: {
-                            parent.color = settingsMouseArea.containsMouse ? Qt.alpha("#938f99", 0.15) : Qt.alpha("#938f99", 0.05);
-                        }
-                    }
+                            // Power button
+                            Rectangle {
+                                width: 32
+                                height: 32
+                                radius: Appearance.rounding.normal
+                                color: powerMouseArea.containsMouse ? Qt.alpha("#938f99", 0.15) : "transparent"
 
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: 200
-                            easing.type: Easing.OutQuad
-                        }
-                    }
-                }
+                                Widgets.MaterialIcon {
+                                    anchors.centerIn: parent
+                                    text: "power_settings_new"
+                                    font.pointSize: Appearance.font.size.iconMedium
+                                    color: Colours.semantic.textPrimary
+                                }
 
-                // Notifications Section
-                Rectangle {
-                    width: parent.width
-                    height: 160
-                    color: Qt.alpha("#938f99", 0.05)
-                    radius: Appearance.rounding.larger
-                    border.width: 1
-                    border.color: Qt.alpha("#938f99", 0.1)
+                                MouseArea {
+                                    id: powerMouseArea
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    hoverEnabled: true
+                                    onClicked: {
+                                        wlogoutProcess.running = true;
+                                    }
+                                }
 
-                    Column {
-                        anchors.fill: parent
-                        anchors.margins: 16
-                        spacing: 8
-
-                        Text {
-                            text: "Notifications"
-                            font.family: Appearance.font.family.display
-                            font.pointSize: Appearance.font.size.body
-                            font.weight: Font.Medium
-                            color: Colours.semantic.accent
-                        }
-
-                        Text {
-                            text: "No new notifications"
-                            font.family: Appearance.font.family.display
-                            font.pointSize: Appearance.font.size.smaller
-                            color: Colours.semantic.borderStrong
-                            opacity: 0.7
-                        }
-                    }
-                }
-
-                // Actions Section
-                Rectangle {
-                    width: parent.width
-                    height: 80
-                    color: Qt.alpha(Colours.semantic.accent, 0.03)
-                    radius: Appearance.rounding.larger
-                    border.width: 1
-                    border.color: Qt.alpha("#938f99", 0.1)
-
-                    Row {
-                        anchors.centerIn: parent
-                        spacing: 12
-
-                        Rectangle {
-                            width: 60
-                            height: 40
-                            radius: Appearance.rounding.normal
-                            color: mouseArea1.containsMouse ? Qt.alpha(Colours.semantic.accent, 0.12) : Qt.alpha(Colours.semantic.accent, 0.08)
-                            border.width: 1
-                            border.color: Qt.alpha(Colours.semantic.accent, 0.2)
-
-                            Text {
-                                anchors.centerIn: parent
-                                text: "Settings"
-                                font.family: Appearance.font.family.display
-                                font.pointSize: Appearance.font.size.small
-                                color: Colours.semantic.accent
+                                Behavior on color {
+                                    ColorAnimation {
+                                        duration: 200
+                                        easing.type: Easing.OutQuad
+                                    }
+                                }
                             }
 
-                            MouseArea {
-                                id: mouseArea1
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: {
-                                    DebugUtils.log("Settings clicked");
+                            // Settings button
+                            Rectangle {
+                                width: 32
+                                height: 32
+                                radius: Appearance.rounding.normal
+                                color: settingsIconMouseArea.containsMouse ? Qt.alpha("#938f99", 0.15) : "transparent"
+
+                                Widgets.MaterialIcon {
+                                    anchors.centerIn: parent
+                                    text: "settings"
+                                    font.pointSize: Appearance.font.size.iconMedium
+                                    color: Colours.semantic.textPrimary
+                                }
+
+                                MouseArea {
+                                    id: settingsIconMouseArea
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    hoverEnabled: true
+                                    onClicked: {
+                                        SettingsManager.showSettingsWindow();
+                                    }
+                                }
+
+                                Behavior on color {
+                                    ColorAnimation {
+                                        duration: 200
+                                        easing.type: Easing.OutQuad
+                                    }
+                                }
+                            }
+
+                            // Close button
+                            Rectangle {
+                                width: 32
+                                height: 32
+                                radius: Appearance.rounding.normal
+                                color: closeButtonMouseArea.containsMouse ? Qt.alpha("#938f99", 0.15) : "transparent"
+
+                                Widgets.MaterialIcon {
+                                    anchors.centerIn: parent
+                                    text: "close"
+                                    font.pointSize: Appearance.font.size.iconMedium
+                                    color: Colours.semantic.textPrimary
+                                }
+
+                                MouseArea {
+                                    id: closeButtonMouseArea
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    hoverEnabled: true
+                                    onClicked: {
+                                        closeActionCenter();
+                                    }
+                                }
+
+                                Behavior on color {
+                                    ColorAnimation {
+                                        duration: 200
+                                        easing.type: Easing.OutQuad
+                                    }
                                 }
                             }
                         }
+                    }
 
-                        Rectangle {
-                            width: 60
-                            height: 40
-                            radius: Appearance.rounding.normal
-                            color: mouseArea2.containsMouse ? Qt.alpha(Colours.semantic.accent, 0.12) : Qt.alpha(Colours.semantic.accent, 0.08)
-                            border.width: 1
-                            border.color: Qt.alpha(Colours.semantic.accent, 0.2)
+                    // Separator
+                    Rectangle {
+                        width: parent.width
+                        height: 1
+                        color: Qt.alpha("#938f99", 0.3)
+                    }
 
-                            Text {
-                                anchors.centerIn: parent
-                                text: "Power"
-                                font.family: Appearance.font.family.display
-                                font.pointSize: Appearance.font.size.small
-                                color: Colours.semantic.accent
-                            }
+                    // Notifications Section
+                    Rectangle {
+                        width: parent.width
+                        height: 480
+                        color: Qt.alpha("#938f99", 0.05)
+                        radius: Appearance.rounding.larger
+                        border.width: 1
+                        border.color: Qt.alpha("#938f99", 0.1)
 
-                            MouseArea {
-                                id: mouseArea2
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: {
-                                    DebugUtils.log("Power clicked");
-                                }
-                            }
+                        NotificationHistoryContent {
+                            anchors.fill: parent
+                            anchors.margins: 16
+                            showHeader: false  // Don't show header since we're in Action Center
+                            compactMode: true  // Use compact mode for Action Center
                         }
                     }
                 }
