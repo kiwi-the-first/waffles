@@ -10,9 +10,9 @@ Rectangle {
     implicitHeight: iconsColumn.implicitHeight + 16
     radius: Appearance.rounding.large
 
-    color: Qt.alpha(Colours.semantic.accent, 0.05)
+    color: Qt.alpha(Colours.m3primary, 0.05)
     border.width: 1
-    border.color: Qt.alpha("#938f99", 0.08)
+    border.color: Qt.alpha(Colours.m3outline, 0.08)
 
     // Subtle background gradient
     Rectangle {
@@ -21,7 +21,7 @@ Rectangle {
         gradient: Gradient {
             GradientStop {
                 position: 0.0
-                color: Qt.alpha(Colours.semantic.accent, 0.02)
+                color: Qt.alpha(Colours.m3primary, 0.02)
             }
             GradientStop {
                 position: 1.0
@@ -43,7 +43,15 @@ Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
+        Status.PowerProfileIcon {
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
         Status.VolumeIcon {
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        Status.NotificationIcon {
             anchors.horizontalCenter: parent.horizontalCenter
         }
     }

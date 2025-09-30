@@ -13,7 +13,12 @@ import qs.services
 
 ShellRoot {
     // Force IPCManager instantiation (required for IpcHandlers to work)
-    // Wallpaper {}
+    Wallpaper {}
+
+    // Notification popups (toast-style). Stacks from top-right of screen.
+    Widgets.NotificationPopupManager {
+        id: notificationPopupManager
+    }
 
     property var ipcManager: IPCManager
 
@@ -36,9 +41,9 @@ ShellRoot {
     Widgets.ActionCenterWindow {
         id: actionCenterWindow
         objectName: "actionCenterWindow"
-        anchor.window: mainBar
-        anchor.rect.x: 70
-        anchor.rect.y: 660
+        // anchor.window: mainBar
+        // anchor.rect.x: 70
+        // anchor.rect.y: 660
         visible: ActionCenterManager.actionCenterVisible
     }
 
@@ -50,19 +55,6 @@ ShellRoot {
         anchor.rect.y: 800  // Position near the network icon
         visible: NetworkManager.networkSelectorVisible
     }
-
-    // Widgets.SearchWindowAsPanelWindow {
-    //     id: searchWindow
-    //     objectName: "searchWindow"
-    //     anchor.window: mainBar
-    //     anchor.rect.x: (mainBar.scren.width - searchWindow.implicitWidth) / 2  // Center horizontally
-    //     anchor.rect.y: (mainBar.screen.height - searchWindow.implicitHeight) / 2  // Center vertically
-    //     visible: SearchManager.searchVisible
-    //
-    //     Component.onCompleted: {
-    //         SearchManager.setSearchWindow(searchWindow);
-    //     }
-    // }
 
     BigClock {
         anchors {
@@ -79,9 +71,6 @@ ShellRoot {
     Widgets.SearchWindow {
         id: searchWindow
         objectName: "searchWindow"
-        // anchor.window: mainBar
-        // anchor.rect.x: (mainBar.screen.width - searchWindow.implicitWidth) / 2  // Center horizontally
-        // anchor.rect.y: (mainBar.screen.height - searchWindow.implicitHeight) / 2  // Center vertically
         visible: SearchManager.searchVisible
 
         Component.onCompleted: {
@@ -95,8 +84,6 @@ ShellRoot {
         anchor.window: mainBar
         anchor.rect.x: (mainBar.screen.width - searchWindow.implicitWidth) / 2  // Center horizontally
         anchor.rect.y: (mainBar.screen.height - searchWindow.implicitHeight) / 2  // Center vertically
-        // anchor.rect.x: 70
-        // anchor.rect.y: 440
         visible: SettingsManager.settingsWindowVisible
     }
 

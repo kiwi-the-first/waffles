@@ -7,10 +7,10 @@ import Quickshell.Wayland
 
 PanelWindow {
     id: background
-    // required property ShellScreen modelData
-    // screen: modelData
-    // WlrLayershell.exclusionMode: ExclusionMode.Ignore
-    // WlrLayershell.layer: WlrLayer.Background
+    required property ShellScreen modelData
+    screen: modelData
+    WlrLayershell.exclusionMode: ExclusionMode.Ignore
+    WlrLayershell.layer: WlrLayer.Background
     color: "black"
     anchors {
         top: true

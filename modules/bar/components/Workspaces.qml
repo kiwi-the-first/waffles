@@ -4,7 +4,6 @@ import QtQuick.Layouts
 import Quickshell.Hyprland
 import Quickshell
 import qs.services
-// import qs.modules.helper.widgets as Widgets
 import qs.modules.common
 import qs.config
 

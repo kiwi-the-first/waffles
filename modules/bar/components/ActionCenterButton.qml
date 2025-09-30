@@ -4,7 +4,6 @@ import QtQuick.Effects
 import "../../../services"
 import "../../../widgets" as Widgets
 import "../../../config"
-import qs.modules.actioncenter
 
 Rectangle {
     id: root

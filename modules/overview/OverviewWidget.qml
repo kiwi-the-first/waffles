@@ -143,7 +143,6 @@ Item {
                 // Window repeater
                 model: ScriptModel {
                     values: {
-                        // console.log(JSON.stringify(ToplevelManager.toplevels.values.map(t => t), null, 2))
                         return ToplevelManager.toplevels.values.filter(toplevel => {
                             const address = `0x${toplevel.HyprlandToplevel.address}`;
                             var win = windowByAddress[address];
@@ -203,7 +202,6 @@ Item {
                             window.Drag.source = window;
                             window.Drag.hotSpot.x = mouse.x;
                             window.Drag.hotSpot.y = mouse.y;
-                        // console.log(`[OverviewWindow] Dragging window ${windowData?.address} from position (${window.x}, ${window.y})`)
                         }
                         onReleased: {
                             const targetWorkspace = root.draggingTargetWorkspace;
