@@ -16,6 +16,19 @@ QtObject {
     property var savedConnectionDetails: new Map()  // Maps SSID to connection UUID
     property bool isScanning: false
 
+    // Computed properties for active network state
+    readonly property bool isConnected: activeNetwork !== null
+    readonly property var activeNetwork: {
+        for (let network of availableNetworks) {
+            if (network.isActive) {
+                return network;
+            }
+        }
+        return null;
+    }
+    readonly property string activeSSID: activeNetwork ? activeNetwork.ssid : ""
+    readonly property int signalStrength: activeNetwork ? activeNetwork.signal : 0
+
     // Timer for hiding the network selector
     property Timer hideTimer: Timer {
         interval: 300
@@ -32,6 +45,12 @@ QtObject {
         running: true
         repeat: true
         onTriggered: root.scanNetworks()
+    }
+
+    // Debounce timer to prevent excessive scanning
+    property Timer scanDebounceTimer: Timer {
+        interval: 2000  // 2 second debounce
+        onTriggered: root.performNetworkScan()
     }
 
     property var scanProcess: null
@@ -59,6 +78,11 @@ QtObject {
     }
 
     function scanNetworks() {
+        // Use debouncing to prevent excessive scanning
+        scanDebounceTimer.restart();
+    }
+
+    function performNetworkScan() {
         if (isScanning)
             return;
 
@@ -368,7 +392,7 @@ QtObject {
     function connectToNetwork(ssid, password) {
         DebugUtils.log("NetworkManager: Connecting to", ssid);
 
-        // First try with saved connection if available
+        // First try with saved connection if available, otherwise use direct method
         if (savedConnectionDetails.has(ssid)) {
             const connectionUuid = savedConnectionDetails.get(ssid);
             DebugUtils.log("NetworkManager: Attempting to use saved connection UUID", connectionUuid);
@@ -380,50 +404,21 @@ QtObject {
     }
 
     function connectUsingSavedConnection(ssid, connectionUuid, fallbackPassword) {
-        const connectProcess = Qt.createQmlObject(`
-            import QtQuick
-            import Quickshell.Io
-            Process {
-                command: ["nmcli", "connection", "up", "${connectionUuid}"]
-                running: true
-
-                stdout: StdioCollector {
-                    onStreamFinished: {
-                        if (text.includes("successfully activated") || text.includes("Connection successfully activated")) {
-                            DebugUtils.log("NetworkManager: Successfully connected to", "${ssid}", "using saved connection UUID");
-                            Qt.callLater(() => root.scanNetworks());
-                        }
-                    }
-                }
-
-                stderr: StdioCollector {
-                    onStreamFinished: {
-                        if (text.length > 0) {
-                            DebugUtils.error("NetworkManager: Saved connection failed (UUID ${connectionUuid}):", text);
-
-                            // Check if it's a credentials issue
-                            if (text.includes("Secrets were required") || text.includes("password") || text.includes("encryption keys are required")) {
-                                DebugUtils.log("NetworkManager: Connection exists but needs password. Prompting user for", "${ssid}");
-                                // Remove this SSID from saved connections since it doesn't have credentials
-                                if (root.savedConnectionDetails.has("${ssid}")) {
-                                    root.savedConnectionDetails.delete("${ssid}");
-                                }
-                                // Trigger password dialog
-                                root.connectUsingDirectMethod("${ssid}", "");
-                            } else {
-                                DebugUtils.log("NetworkManager: Other connection error, falling back to direct connection method");
-                                root.connectUsingDirectMethod("${ssid}", "${fallbackPassword}");
-                            }
-                        }
-                    }
-                }
-            }
-        `, root);
+        // Try to activate the saved connection first
+        executeConnectionCommand(["nmcli", "connection", "up", connectionUuid], ssid, () => {
+            // If saved connection fails, fall back to direct method
+            DebugUtils.log("NetworkManager: Saved connection failed, falling back to direct method");
+            connectUsingDirectMethod(ssid, fallbackPassword);
+        });
     }
 
     function connectUsingDirectMethod(ssid, password) {
         const command = password ? ["nmcli", "dev", "wifi", "connect", ssid, "password", password] : ["nmcli", "dev", "wifi", "connect", ssid];
 
+        executeConnectionCommand(command, ssid);
+    }
+
+    function executeConnectionCommand(command, ssid, onError) {
         const connectProcess = Qt.createQmlObject(`
             import QtQuick
             import Quickshell.Io
@@ -434,7 +429,7 @@ QtObject {
                 stdout: StdioCollector {
                     onStreamFinished: {
                         if (text.includes("successfully activated") || text.includes("Connection successfully activated")) {
-                            DebugUtils.log("NetworkManager: Successfully connected to", "${ssid}", "using direct method");
+                            DebugUtils.log("NetworkManager: Successfully connected to", "${ssid}");
                             Qt.callLater(() => root.scanNetworks());
                         }
                     }
@@ -443,12 +438,21 @@ QtObject {
                 stderr: StdioCollector {
                     onStreamFinished: {
                         if (text.length > 0) {
-                            DebugUtils.error("NetworkManager: Direct connection failed:", text);
+                            DebugUtils.error("NetworkManager: Connection failed for", "${ssid}", ":", text);
                         }
                     }
                 }
             }
         `, root);
+
+        // Handle errors if callback provided
+        if (onError) {
+            connectProcess.stderr.streamFinished.connect(() => {
+                if (connectProcess.stderr.text.length > 0) {
+                    onError();
+                }
+            });
+        }
     }
 
     Component.onCompleted: {

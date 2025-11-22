@@ -17,6 +17,7 @@ Rectangle {
     border.color: Qt.alpha("#938f99", 0.08)
 
     property bool expanded: ActionCenterManager.actionCenterVisible
+    property int notificationCount: NotificationService.historyList.count
 
     Behavior on color {
         ColorAnimation {
@@ -51,16 +52,69 @@ Rectangle {
 
     Widgets.MaterialIcon {
         anchors.centerIn: parent
-        // text: root.expanded ? "keyboard_arrow_left" : "keyboard_arrow_right"
-        text: root.expanded ? "close_fullscreen" : "dashboard_customize"
-        color: Colours.semantic.textPrimary
+        animate: true
+
+        // Icon changes based on notification state
+        text: {
+            if (NotificationService.popupsDisabled) {
+                return "notifications_off";
+            } else if (root.notificationCount > 0) {
+                return "notifications";
+            } else {
+                return "notifications_none";
+            }
+        }
+
+        color: NotificationService.popupsDisabled ? Colours.m3error : Colours.semantic.textPrimary
         font.pointSize: Appearance.font.size.iconMedium
         fill: buttonHover.containsMouse ? 1 : 0
-        animate: true
+
+        // Hide the icon while hovered so the count Text is shown instead
+        opacity: buttonHover.containsMouse ? 0 : 1
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 150
+                easing.type: Easing.OutQuad
+            }
+        }
 
         Behavior on rotation {
             NumberAnimation {
                 duration: 200
+                easing.type: Easing.OutQuad
+            }
+        }
+    }
+
+    // Show notification count when hovered
+    Text {
+        anchors.centerIn: parent
+
+        text: {
+            if (!buttonHover.containsMouse)
+                return "";
+
+            if (NotificationService.popupsDisabled) {
+                return "DND";
+            } else if (root.notificationCount > 0) {
+                return root.notificationCount.toString();
+            } else {
+                return "0";
+            }
+        }
+
+        // Only visible when hovered
+        opacity: buttonHover.containsMouse ? 1 : 0
+
+        font.family: Appearance.font.family.display
+        font.pointSize: Appearance.font.size.body
+        font.weight: Font.Medium
+        color: NotificationService.popupsDisabled ? Colours.m3error : Colours.semantic.textPrimary
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 150
                 easing.type: Easing.OutQuad
             }
         }

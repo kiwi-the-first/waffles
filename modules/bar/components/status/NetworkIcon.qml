@@ -14,39 +14,10 @@ Rectangle {
     radius: Appearance.rounding.larger
     color: networkHover.containsMouse ? Colours.alpha(Colours.m3primary, 0.12) : "transparent"
 
-    property string connectionStatus: "disconnected"
-    property string ssid: ""
-    property int signalStrength: 0
-    property bool isConnected: connectionStatus === "connected"
-
-    // Get network status from NetworkManager instead of scanning separately
-    function updateFromNetworkManager() {
-        let connected = false;
-        let activeSSID = "";
-        let signal = 0;
-
-        // Find the active network from NetworkManager's data
-        for (let network of NetworkManager.availableNetworks) {
-            if (network.isActive) {
-                connected = true;
-                activeSSID = network.ssid;
-                signal = network.signal;
-                break;
-            }
-        }
-
-        connectionStatus = connected ? "connected" : "disconnected";
-        ssid = activeSSID;
-        signalStrength = signal;
-    }
-
-    // Listen for changes in NetworkManager's network list
-    Connections {
-        target: NetworkManager
-        function onAvailableNetworksChanged() {
-            networkRect.updateFromNetworkManager();
-        }
-    }
+    // Direct property bindings to NetworkManager computed properties
+    readonly property bool isConnected: NetworkManager.isConnected
+    readonly property string ssid: NetworkManager.activeSSID
+    readonly property int signalStrength: NetworkManager.signalStrength
 
     Behavior on color {
         ColorAnimation {
@@ -99,6 +70,4 @@ Rectangle {
         font.pointSize: Appearance.font.size.larger
         fill: networkHover.containsMouse ? 1 : 0
     }
-
-    Component.onCompleted: networkRect.updateFromNetworkManager()
 }

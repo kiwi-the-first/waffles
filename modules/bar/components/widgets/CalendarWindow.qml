@@ -128,7 +128,7 @@ PopupWindow {
                 Layout.fillWidth: true
                 columns: 7
                 rowSpacing: 4
-                columnSpacing: 4
+                columnSpacing: 10
 
                 Repeater {
                     model: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]

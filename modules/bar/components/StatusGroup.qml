@@ -39,19 +39,15 @@ Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
+        Status.VolumeIcon {
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
         Status.BatteryIcon {
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
         Status.PowerProfileIcon {
-            anchors.horizontalCenter: parent.horizontalCenter
-        }
-
-        Status.VolumeIcon {
-            anchors.horizontalCenter: parent.horizontalCenter
-        }
-
-        Status.NotificationIcon {
             anchors.horizontalCenter: parent.horizontalCenter
         }
     }

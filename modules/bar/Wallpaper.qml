@@ -23,7 +23,7 @@ PanelWindow {
         id: wallpaper
         anchors.fill: parent
         opacity: 1
-        source: "/home/kiwi/Pictures/kwiWallpaper/jake-blucker-YHNYQCxZ40s-unsplash.jpg"
+        source: "/home/kiwi/Pictures/kwiWallpaper/spenser-sembrat-unsplash.jpg"
     }
 }
 // }
