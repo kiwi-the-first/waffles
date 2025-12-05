@@ -7,7 +7,12 @@ import "../../config"
 
 PanelWindow {
     id: panel
-    WlrLayershell.namespace: "waffles-bar"
+
+    // Screen property for multi-monitor support
+    property ShellScreen targetScreen: null
+    screen: targetScreen
+
+    WlrLayershell.namespace: "waffles-bar-" + (targetScreen?.name || "unknown")
 
     anchors {
         left: true

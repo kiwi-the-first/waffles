@@ -13,96 +13,121 @@ import qs.services
 
 ShellRoot {
     // Force IPCManager instantiation (required for IpcHandlers to work)
-    Wallpaper {}
+    property var ipcManager: IPCManager
 
     // Notification popups (toast-style). Stacks from top-right of screen.
+    // Already multi-monitor aware
     Widgets.NotificationPopupManager {
         id: notificationPopupManager
     }
 
-    property var ipcManager: IPCManager
+    // Multi-monitor support: Create bar and related windows for each screen
+    Variants {
+        model: Quickshell.screens
 
-    Bar {
-        id: mainBar
+        delegate: Item {
+            id: screenDelegate
+            required property ShellScreen modelData
 
-        // Handle keyboard focus when password dialog or search window is visible
-        WlrLayershell.keyboardFocus: (NetworkManager.passwordDialogVisible || SearchManager.searchVisible) ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
-    }
+            // Wallpaper for this screen
+            Wallpaper {
+                targetScreen: screenDelegate.modelData
+            }
 
-    Widgets.CalendarWindow {
-        id: calendarWindow
-        objectName: "calendarWindow"
-        anchor.window: mainBar
-        anchor.rect.x: 70    // Position directly to the right of the bar
-        anchor.rect.y: 440  // Center vertically relative to the screen center
-        visible: CalendarManager.calendarVisible
-    }
+            // Bar for this screen
+            Bar {
+                id: screenBar
+                targetScreen: screenDelegate.modelData
 
-    Widgets.ActionCenterWindow {
-        id: actionCenterWindow
-        objectName: "actionCenterWindow"
-        // anchor.window: mainBar
-        // anchor.rect.x: 70
-        // anchor.rect.y: 660
-        visible: ActionCenterManager.actionCenterVisible
-    }
+                // Handle keyboard focus when password dialog or search window is visible
+                WlrLayershell.keyboardFocus: (NetworkManager.passwordDialogVisible || SearchManager.searchVisible) ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+            }
 
-    Widgets.NetworkSelectorWindow {
-        id: networkSelectorWindow
-        objectName: "networkSelectorWindow"
-        anchor.window: mainBar
-        anchor.rect.x: 70
-        anchor.rect.y: 800  // Position near the network icon
-        visible: NetworkManager.networkSelectorVisible
-    }
+            // Calendar window for this screen
+            Widgets.CalendarWindow {
+                id: calendarWindow
+                objectName: "calendarWindow-" + (screenDelegate.modelData?.name || "unknown")
+                anchor.window: screenBar
+                anchor.rect.x: 70    // Position directly to the right of the bar
+                anchor.rect.y: 440   // Center vertically relative to the screen center
+                visible: CalendarManager.calendarVisible
+            }
 
-    BigClock {
-        anchors {
-            top: true
-            bottom: true
-            left: true
-            right: true
+            // Action Center window for this screen
+            Widgets.ActionCenterWindow {
+                id: actionCenterWindow
+                objectName: "actionCenterWindow-" + (screenDelegate.modelData?.name || "unknown")
+                targetScreen: screenDelegate.modelData
+                visible: ActionCenterManager.actionCenterVisible
+            }
+
+            // Network selector window for this screen
+            Widgets.NetworkSelectorWindow {
+                id: networkSelectorWindow
+                objectName: "networkSelectorWindow-" + (screenDelegate.modelData?.name || "unknown")
+                anchor.window: screenBar
+                anchor.rect.x: 70
+                anchor.rect.y: 800   // Position near the network icon
+                visible: NetworkManager.networkSelectorVisible
+            }
+
+            // Big clock for this screen
+            BigClock {
+                targetScreen: screenDelegate.modelData
+                anchors {
+                    top: true
+                    bottom: true
+                    left: true
+                    right: true
+                }
+                margins.left: -50
+                margins.top: -600
+            }
+
+            // Search window for this screen
+            Widgets.SearchWindow {
+                id: searchWindow
+                objectName: "searchWindow-" + (screenDelegate.modelData?.name || "unknown")
+                targetScreen: screenDelegate.modelData
+                visible: SearchManager.searchVisible
+
+                Component.onCompleted: {
+                    // Only register the first screen's search window
+                    if (screenDelegate.modelData === Quickshell.screens[0]) {
+                        SearchManager.setSearchWindow(searchWindow);
+                    }
+                }
+            }
+
+            // Settings window for this screen (uses PopupWindow, inherits screen from anchor)
+            Widgets.SettingsWindow {
+                id: settingsWindow
+                objectName: "settingsWindow-" + (screenDelegate.modelData?.name || "unknown")
+                anchor.window: screenBar
+                anchor.rect.x: (screenDelegate.modelData ? screenDelegate.modelData.width - settingsWindow.implicitWidth : 500) / 2
+                anchor.rect.y: (screenDelegate.modelData ? screenDelegate.modelData.height - settingsWindow.implicitHeight : 400) / 2
+                visible: SettingsManager.settingsWindowVisible
+            }
+
+            // Workspace window for this screen
+            Widgets.WorkspaceWindow {
+                id: workspaceWindow
+                objectName: "workspaceWindow-" + (screenDelegate.modelData?.name || "unknown")
+                anchor.window: screenBar
+                anchor.rect.x: 70    // Position directly to the right of the bar
+                anchor.rect.y: -4    // Position above the calendar
+                visible: WorkspaceManager.workspaceWindowVisible
+            }
+
+            // OSD window for volume and brightness controls
+            Widgets.OSDWindowPopup {
+                id: osdWindow
+                objectName: "osdWindow-" + (screenDelegate.modelData?.name || "unknown")
+                anchor.window: screenBar
+                anchor.rect.x: (screenDelegate.modelData ? screenDelegate.modelData.width - osdWindow.implicitWidth : 240) / 2
+                anchor.rect.y: 850   // Position above the calendar
+                visible: OSDManager.osdVisible
+            }
         }
-
-        margins.left: -50
-        margins.top: -600
-    }
-
-    Widgets.SearchWindow {
-        id: searchWindow
-        objectName: "searchWindow"
-        visible: SearchManager.searchVisible
-
-        Component.onCompleted: {
-            SearchManager.setSearchWindow(searchWindow);
-        }
-    }
-
-    Widgets.SettingsWindow {
-        id: settingsWindow
-        objectName: "settingsWindow"
-        anchor.window: mainBar
-        anchor.rect.x: (mainBar.screen.width - searchWindow.implicitWidth) / 2  // Center horizontally
-        anchor.rect.y: (mainBar.screen.height - searchWindow.implicitHeight) / 2  // Center vertically
-        visible: SettingsManager.settingsWindowVisible
-    }
-
-    Widgets.WorkspaceWindow {
-        id: workspaceWindow
-        objectName: "workspaceWindow"
-        anchor.window: mainBar
-        anchor.rect.x: 70    // Position directly to the right of the bar
-        anchor.rect.y: -4   // Position above the calendar
-        visible: WorkspaceManager.workspaceWindowVisible
-    }
-
-    // OSD window for volume and brightness controls
-    Widgets.OSDWindowPopup {
-        id: osdWindow
-        objectName: "osdWindow"
-        anchor.window: mainBar
-        anchor.rect.x: (mainBar.screen.width - osdWindow.implicitWidth) / 2  // Center on screen
-        anchor.rect.y: 850   // Position above the calendar
-        visible: OSDManager.osdVisible
     }
 }

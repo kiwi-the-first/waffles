@@ -1,6 +1,11 @@
 module widgets
+singleton AnimationBehaviors 1.0 AnimationBehaviors.qml
+Card 1.0 Card.qml
+CloseButton 1.0 CloseButton.qml
 CornerThingy 1.0 CornerThingy.qml
+HoverableIconButton 1.0 HoverableIconButton.qml
 MaterialIcon 1.0 MaterialIcon.qml
 StateLayer 1.0 StateLayer.qml
 StyledText 1.0 StyledText.qml
 VerticalSlider 1.0 VerticalSlider.qml
+WindowHeader 1.0 WindowHeader.qml

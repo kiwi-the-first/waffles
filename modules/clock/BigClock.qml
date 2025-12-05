@@ -5,10 +5,15 @@ import qs.config
 
 PanelWindow {
     id: root
+
+    // Screen property for multi-monitor support
+    property ShellScreen targetScreen: null
+    screen: targetScreen
+
     color: "transparent"
     implicitWidth: 250
 
-    WlrLayershell.namespace: "waffles-clock"
+    WlrLayershell.namespace: "waffles-clock-" + (targetScreen?.name || "unknown")
     WlrLayershell.layer: WlrLayer.Bottom
 
     SystemClock {

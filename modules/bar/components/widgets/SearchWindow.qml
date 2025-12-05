@@ -14,6 +14,10 @@ import "../../../../config"
 PanelWindow {
     id: searchWindow
 
+    // Screen property for multi-monitor support
+    property ShellScreen targetScreen: null
+    screen: targetScreen
+
     // Expose the input so external callers can reset/focus like other modules do
     property alias searchField: searchInput
 
@@ -22,6 +26,7 @@ PanelWindow {
     visible: false
     color: "transparent"
     WlrLayershell.layer: WlrLayer.Top
+    WlrLayershell.namespace: "waffles-search-" + (targetScreen?.name || "unknown")
     // Important: without requesting keyboard focus on Wayland, this PanelWindow
     // will not receive key events (so TextField won't focus type). Using Exclusive
     // here because this modal contains the only active text input while visible
@@ -169,53 +174,11 @@ PanelWindow {
                     spacing: 8
 
                     // Title
-                    RowLayout {
+                    Widgets.WindowHeader {
                         Layout.fillWidth: true
-                        spacing: 12
-
-                        Widgets.MaterialIcon {
-                            text: "search"
-                            color: Colours.m3primary
-                            font.pointSize: Appearance.font.size.larger
-                        }
-
-                        Widgets.StyledText {
-                            text: "Search"
-                            font.pointSize: Appearance.font.size.medium
-                            font.weight: Font.Medium
-                            color: Colours.m3onSurface
-                            Layout.fillWidth: true
-                        }
-
-                        // Close button
-                        Rectangle {
-                            Layout.preferredWidth: 32
-                            Layout.preferredHeight: 32
-                            radius: Appearance.rounding.normal
-                            color: closeButton.containsMouse ? Qt.alpha("#938f99", 0.15) : "transparent"
-
-                            Widgets.MaterialIcon {
-                                anchors.centerIn: parent
-                                text: "close"
-                                color: Colours.m3onSurface
-                                font.pointSize: Appearance.font.size.iconMedium
-                            }
-
-                            MouseArea {
-                                id: closeButton
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: searchWindow.hideSearch()
-                            }
-
-                            Behavior on color {
-                                ColorAnimation {
-                                    duration: 200
-                                    easing.type: Easing.OutQuad
-                                }
-                            }
-                        }
+                        headerIcon: "search"
+                        headerTitle: "Search"
+                        onCloseClicked: searchWindow.hideSearch()
                     }
 
                     // Search input field

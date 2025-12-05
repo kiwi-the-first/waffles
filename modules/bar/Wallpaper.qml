@@ -2,13 +2,14 @@ import QtQuick
 import Quickshell
 import Quickshell.Wayland
 
-// Variants {
-//     model: Quickshell.screens
-
 PanelWindow {
     id: background
-    required property ShellScreen modelData
-    screen: modelData
+
+    // Screen property for multi-monitor support
+    property ShellScreen targetScreen: null
+    screen: targetScreen
+
+    WlrLayershell.namespace: "waffles-wallpaper-" + (targetScreen?.name || "unknown")
     WlrLayershell.exclusionMode: ExclusionMode.Ignore
     WlrLayershell.layer: WlrLayer.Background
     color: "black"
@@ -26,4 +27,3 @@ PanelWindow {
         source: "/home/kiwi/Pictures/kwiWallpaper/spenser-sembrat-unsplash.jpg"
     }
 }
-// }

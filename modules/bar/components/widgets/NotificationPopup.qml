@@ -240,30 +240,17 @@ Item {
         }
 
         // Close button (positioned absolutely like Noctalia)
-        Rectangle {
+        Widgets.CloseButton {
             anchors.top: parent.top
             anchors.right: parent.right
             anchors.topMargin: Appearance.spacing.normal
             anchors.rightMargin: Appearance.spacing.normal
             width: 24
             height: 24
-            radius: 12
-            color: closeButtonArea.containsMouse ? Qt.alpha(Colours.m3onSurface, 0.1) : "transparent"
-
-            Widgets.MaterialIcon {
-                anchors.centerIn: parent
-                text: "close"
-                font.pointSize: 16
-                color: Colours.m3onSurfaceVariant
-            }
-
-            MouseArea {
-                id: closeButtonArea
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: toast.startDismiss()
-            }
+            iconSize: 16
+            iconColor: Colours.m3onSurfaceVariant
+            hoverColor: Qt.alpha(Colours.m3onSurface, 0.1)
+            onClicked: toast.startDismiss()
         }
 
         // Right-click to dismiss (matching Noctalia)

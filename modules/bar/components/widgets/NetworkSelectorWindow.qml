@@ -85,121 +85,23 @@ PopupWindow {
                 }
 
                 // Refresh button
-                Rectangle {
+                Widgets.HoverableIconButton {
                     Layout.preferredWidth: 32
                     Layout.preferredHeight: 32
+                    icon: "refresh"
+                    iconColor: Colours.m3primary
+                    iconSize: Appearance.font.size.larger
+                    hoverColor: Colours.alpha(Colours.m3primary, 0.12)
                     radius: Appearance.rounding.normal
-                    color: refreshButton.containsMouse ? Colours.alpha(Colours.m3primary, 0.12) : "transparent"
-                    border.color: refreshButton.containsMouse ? Colours.m3primary : "transparent"  // Debug border
+                    
                     border.width: 1
-
-                    // Try multiple icon approaches
-                    Item {
-                        anchors.centerIn: parent
-                        width: 20
-                        height: 20
-                        z: 1  // Lower z-index than MouseArea
-
-                        // Primary icon attempt
-                        Widgets.MaterialIcon {
-                            id: refreshIcon
-                            anchors.centerIn: parent
-                            text: "refresh"  // Back to standard name
-                            color: Colours.m3primary
-                            font.pointSize: Appearance.font.size.larger
-                            visible: text.length > 0
-
-                            // Ensure the icon has a fixed size for proper rotation
-                            width: 20
-                            height: 20
-
-                            // Use rotation property directly instead of transform
-                            property real rotationAngle: 0
-                            rotation: rotationAngle
-
-                            // Simple and reliable rotation animation
-                            RotationAnimator {
-                                id: refreshAnimation
-                                target: refreshIcon
-                                from: 0
-                                to: 360
-                                duration: 2000  // Slower animation to see it better
-                                running: NetworkManager.isScanning
-                                loops: Animation.Infinite
-
-                                onRunningChanged: {
-                                    DebugUtils.log("RotationAnimator running changed to:", running);
-                                    DebugUtils.log("Current rotation:", refreshIcon.rotation);
-                                }
-
-                                onStarted: {
-                                    DebugUtils.log("Animation started!");
-                                }
-
-                                onStopped: {
-                                    DebugUtils.log("Animation stopped!");
-                                }
-                            }
-                        }
-
-                        // Fallback text if icon fails
-                        Text {
-                            id: fallbackIcon
-                            anchors.centerIn: parent
-                            text: "⟳"  // Unicode refresh symbol
-                            color: Colours.m3primary
-                            font.pointSize: Appearance.font.size.larger
-                            visible: !refreshIcon.visible || refreshIcon.text.length === 0
-
-                            width: 20
-                            height: 20
-
-                            RotationAnimator {
-                                target: fallbackIcon
-                                from: 0
-                                to: 360
-                                duration: 2000
-                                running: NetworkManager.isScanning && fallbackIcon.visible
-                                loops: Animation.Infinite
-                            }
-                        }
-
-                        // Debug: log when scanning state changes
-                        Connections {
-                            target: NetworkManager
-                            function onIsScanningChanged() {
-                                DebugUtils.log("NetworkManager.isScanning changed to:", NetworkManager.isScanning);
-                                DebugUtils.log("Refresh animation running:", refreshAnimation.running);
-                            }
-                        }
-                    }
-
-                    MouseArea {
-                        id: refreshButton
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        z: 10  // Ensure it's on top
-
-                        onClicked: {
-                            DebugUtils.log("=== REFRESH BUTTON CLICKED ===");
-                            DebugUtils.log("Before scan - isScanning:", NetworkManager.isScanning);
-                            DebugUtils.log("NetworkManager object:", NetworkManager);
-                            NetworkManager.scanNetworks();
-                            DebugUtils.log("After scan call - isScanning:", NetworkManager.isScanning);
-                        }
-
-                        onPressed: {
-                            DebugUtils.log("Refresh button pressed!");
-                        }
-
-                        onEntered: {
-                            DebugUtils.log("Mouse entered refresh button");
-                        }
-
-                        onExited: {
-                            DebugUtils.log("Mouse exited refresh button");
-                        }
+                    border.color: "transparent"
+                    
+                    onClicked: {
+                        DebugUtils.log("=== REFRESH BUTTON CLICKED ===");
+                        DebugUtils.log("Before scan - isScanning:", NetworkManager.isScanning);
+                        NetworkManager.scanNetworks();
+                        DebugUtils.log("After scan call - isScanning:", NetworkManager.isScanning);
                     }
                 }
             }

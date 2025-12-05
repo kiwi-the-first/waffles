@@ -34,43 +34,15 @@ PopupWindow {
         }
 
         // Close button (X) in top-right corner
-        Rectangle {
+        Widgets.CloseButton {
             anchors.top: parent.top
             anchors.right: parent.right
             anchors.topMargin: 12
             anchors.rightMargin: 12
             width: 28
             height: 28
-            radius: Appearance.rounding.large
-            color: Colours.alpha(Colours.m3outline, 0.1)
-            border.width: 1
-            border.color: Colours.alpha(Colours.m3outline, 0.2)
-
-            Widgets.MaterialIcon {
-                anchors.centerIn: parent
-                text: "close"
-                font.pointSize: Appearance.font.size.title
-                color: Colours.m3onSurface
-            }
-
-            MouseArea {
-                id: closeButtonMouseArea
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                hoverEnabled: true
-                onClicked: {
-                    SettingsManager.hideSettingsWindow();
-                }
-                onContainsMouseChanged: {
-                    parent.color = closeButtonMouseArea.containsMouse ? Colours.alpha(Colours.m3outline, 0.2) : Colours.alpha(Colours.m3outline, 0.1);
-                }
-            }
-
-            Behavior on color {
-                ColorAnimation {
-                    duration: 200
-                    easing.type: Easing.OutQuad
-                }
+            onClicked: {
+                SettingsManager.hideSettingsWindow();
             }
         }
 
